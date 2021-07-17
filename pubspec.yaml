@@ -1,6 +1,6 @@
 name: ktc_dart
 description: Port of the Kotlin Collections library for dart.
-version: 0.0.0
+version: 0.1.0
 
 environment:
   sdk: '>=2.13.4 <3.0.0'
