@@ -3,7 +3,7 @@ import 'package:ktc_dart/ktc_dart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  late Iterable iterable;
+  late Iterable<int> iterable;
 
   setUp(() {
     iterable = Iterable.generate(3);
@@ -25,8 +25,8 @@ void main() {
       expect(associated, {'0': 0, '1': 1, '2': 2});
     });
 
-    test('transformedAssociateBy', () {
-      final associated = iterable.transformedAssociateBy(
+    test('associateAndTransformBy', () {
+      final associated = iterable.associateAndTransformBy(
         (element) => element.toString(),
         (element) => element * 2,
       );
@@ -40,6 +40,26 @@ void main() {
       );
 
       expect(associated, {0: '0', 1: '1', 2: '2'});
+    });
+
+    group('Chunked', () {
+      test('chunked', () {
+        final chunked = iterable.chunked(2);
+
+        expect(chunked, [
+          [0, 1],
+          [2],
+        ]);
+      });
+
+      test('chunkedAndTransform', () {
+        final chunked = iterable.chunkedAndTransform(
+          2,
+          (chunk) => chunk.reduce((value, element) => value + element),
+        );
+
+        expect(chunked, [1, 2]);
+      });
     });
   });
 }
