@@ -1,5 +1,11 @@
 part of ktc_dart;
 
+extension NumIterable on Iterable<num> {
+  /// Returns an average value of elements in the collection.
+  double get average =>
+      cast<num>().reduce((value, element) => value + element) / length;
+}
+
 extension KtcIterable<E> on Iterable<E> {
   /// Returns a [Map] containing [MapEntry]s provided by [transform] function applied to elements of the given collection.
   Map<K, V> associate<K, V>(MapEntry<K, V> Function(E element) transfrom) =>
