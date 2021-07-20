@@ -82,4 +82,9 @@ void main() {
       });
     });
   });
+
+  test('count', () {
+    expect(iterable.count(), 3);
+    expect(iterable.count((element) => element % 2 == 0), 2);
+  });
 }

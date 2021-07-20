@@ -40,4 +40,9 @@ extension KtcIterable<E> on Iterable<E> {
     T Function(List<E> chunk) transmform,
   ) =>
       chunked(size).map(transmform).toList();
+
+  /// Returns the number of elements matching the given [test].
+  /// If [test] is not provided it returns the number of elements in the [Iterable].
+  int count([bool Function(E element)? test]) =>
+      test == null ? length : where(test).length;
 }
