@@ -92,4 +92,27 @@ extension KtcIterable<E> on Iterable<E> {
 
     return iterator.current;
   }
+
+  /// Returns a [List] containing only elements matching the given [test].
+  List<E> whereIndexed(bool Function(int index, E element) test) {
+    final list = <E>[];
+    var index = 0;
+
+    for (final element in this) {
+      if (test(index++, element)) list.add(element);
+    }
+
+    return list;
+  }
+
+  /// Returns a [Iterable] containing all elements that are instances of specified type parameter [T].
+  Iterable<T> whereIsInstance<T>() =>
+      where((element) => element is T).cast<T>();
+
+  /// Returns a [Iterable] containing all elements not matching the given [test].
+  Iterable<E> whereNot(bool Function(E element) test) =>
+      where((element) => !test(element));
+
+  /// Returns a [Iterable] containing all elements that are not `null`.
+  Iterable<E> whereNotNull() => where((element) => element != null);
 }

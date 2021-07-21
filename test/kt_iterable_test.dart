@@ -90,14 +90,15 @@ void main() {
 
   group('Distinct', () {
     test('distinct', () {
-      expect([...iterable, ...iterable].distinct, [0, 1, 2]);
+      final distinct = [...iterable, ...iterable].distinct;
+
+      expect(distinct, [0, 1, 2]);
     });
 
     test('distinctBy', () {
-      expect(
-        iterable.distinctBy((element) => element % 2 == 0),
-        [0, 1],
-      );
+      final distinctBy = iterable.distinctBy((element) => element % 2 == 0);
+
+      expect(distinctBy, [0, 1]);
     });
   });
 
@@ -114,6 +115,34 @@ void main() {
       expect(iterable.elementAtOrNull(2), 2);
       expect(iterable.elementAtOrNull(-1), null);
       expect(iterable.elementAtOrNull(3), null);
+    });
+  });
+
+  group('Where', () {
+    test('whereIndexed', () {
+      final whereIndexed = iterable.whereIndexed(
+        (index, element) => (index + element) % 2 == 0,
+      );
+
+      expect(whereIndexed, [0, 1, 2]);
+    });
+
+    test('whereIsInstance', () {
+      final whereIsInstance = [0, '1', 2].whereIsInstance<String>();
+
+      expect(whereIsInstance, ['1']);
+    });
+
+    test('whereNot', () {
+      final whereNot = iterable.whereNot((element) => element % 2 == 0);
+
+      expect(whereNot, [1]);
+    });
+
+    test('whereNotNull', () {
+      final whereNotNull = [null, 1, null, 3].whereNotNull();
+
+      expect(whereNotNull, [1, 3]);
     });
   });
 }
