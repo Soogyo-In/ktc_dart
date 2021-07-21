@@ -100,4 +100,20 @@ void main() {
       );
     });
   });
+
+  group('ElementAt', () {
+    test('ElementAtOrElse', () {
+      expect(iterable.elementAtOrElse(0, (index) => -index), 0);
+      expect(iterable.elementAtOrElse(2, (index) => -index), 2);
+      expect(iterable.elementAtOrElse(-1, (index) => -index), 1);
+      expect(iterable.elementAtOrElse(3, (index) => -index), -3);
+    });
+
+    test('ElementAtOrNull', () {
+      expect(iterable.elementAtOrNull(0), 0);
+      expect(iterable.elementAtOrNull(2), 2);
+      expect(iterable.elementAtOrNull(-1), null);
+      expect(iterable.elementAtOrNull(3), null);
+    });
+  });
 }

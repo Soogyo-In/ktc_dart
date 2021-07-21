@@ -62,4 +62,34 @@ extension KtcIterable<E> on Iterable<E> {
 
     return list;
   }
+
+  /// Returns an element at the given [index] or the result of calling the [defaultValue] function if the [index] is out of bounds of this collection.
+  E elementAtOrElse(int index, E Function(int index) defaultValue) {
+    if (length <= index || index < 0) return defaultValue(index);
+
+    final iterator = this.iterator;
+    var elementIndex = 0;
+
+    while (iterator.moveNext()) {
+      if (index == elementIndex) break;
+      elementIndex++;
+    }
+
+    return iterator.current;
+  }
+
+  /// Returns an element at the given [index] or `null` if the [index] is out of bounds of this collection.
+  E? elementAtOrNull(int index) {
+    if (length <= index || index < 0) return null;
+
+    final iterator = this.iterator;
+    var elementIndex = 0;
+
+    while (iterator.moveNext()) {
+      if (index == elementIndex) break;
+      elementIndex++;
+    }
+
+    return iterator.current;
+  }
 }
