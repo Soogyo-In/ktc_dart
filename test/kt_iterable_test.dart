@@ -125,34 +125,6 @@ void main() {
     expect(expandIndexed, [0, 0, 1, 1, 2, 2]);
   });
 
-  group('Where', () {
-    test('whereIndexed', () {
-      final whereIndexed = iterable.whereIndexed(
-        (index, element) => (index + element).isEven,
-      );
-
-      expect(whereIndexed, [0, 1, 2]);
-    });
-
-    test('whereIsInstance', () {
-      final whereIsInstance = [0, '1', 2].whereIsInstance<String>();
-
-      expect(whereIsInstance, ['1']);
-    });
-
-    test('whereNot', () {
-      final whereNot = iterable.whereNot((element) => element.isEven);
-
-      expect(whereNot, [1]);
-    });
-
-    test('whereNotNull', () {
-      final whereNotNull = [null, 1, null, 3].whereNotNull();
-
-      expect(whereNotNull, [1, 3]);
-    });
-  });
-
   group('First', () {
     test('firstNotNullOf', () {
       expect(iterable.firstNotNullOf((element) => element.toString()), '0');
@@ -193,6 +165,44 @@ void main() {
     test('findLast', () {
       expect(iterable.findLast((element) => element.isEven), 2);
       expect(iterable.findLast((element) => element.isNegative), null);
+    });
+  });
+
+  test('foldIndexed', () {
+    expect(
+      iterable.foldIndexed<int>(
+        0,
+        (index, previousValue, element) => index + previousValue + element,
+      ),
+      6,
+    );
+  });
+
+  group('Where', () {
+    test('whereIndexed', () {
+      final whereIndexed = iterable.whereIndexed(
+        (index, element) => (index + element).isEven,
+      );
+
+      expect(whereIndexed, [0, 1, 2]);
+    });
+
+    test('whereIsInstance', () {
+      final whereIsInstance = [0, '1', 2].whereIsInstance<String>();
+
+      expect(whereIsInstance, ['1']);
+    });
+
+    test('whereNot', () {
+      final whereNot = iterable.whereNot((element) => element.isEven);
+
+      expect(whereNot, [1]);
+    });
+
+    test('whereNotNull', () {
+      final whereNotNull = [null, 1, null, 3].whereNotNull();
+
+      expect(whereNotNull, [1, 3]);
     });
   });
 }

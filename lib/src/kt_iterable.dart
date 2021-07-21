@@ -154,6 +154,18 @@ extension KtcIterable<E> on Iterable<E> {
     return element;
   }
 
+  /// Accumulates value starting with [initialValue] and applying operation from left to right to current accumulator value and each element with its index in the original collection.
+  T foldIndexed<T>(
+    T initialValue,
+    T Function(int index, T previousValue, E element) combine,
+  ) {
+    var index = 0;
+    return fold(
+      initialValue,
+      (previousValue, element) => combine(index++, previousValue, element),
+    );
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];
