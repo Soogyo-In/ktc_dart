@@ -146,6 +146,37 @@ void main() {
     });
   });
 
+  group('First', () {
+    test('firstNotNullOf', () {
+      expect(iterable.firstNotNullOf((element) => element.toString()), '0');
+      expect(
+        () => iterable.firstNotNullOf((element) => null),
+        throwsA(TypeMatcher<NoSuchElementException>()),
+      );
+    });
+
+    test('firstNotNullOfOrNull', () {
+      expect(
+        iterable.firstNotNullOfOrNull((element) => element.toString()),
+        '0',
+      );
+      expect(
+        iterable.firstNotNullOfOrNull((element) => null),
+        null,
+      );
+    });
+
+    test('firstOrNull', () {
+      expect([].firstOrNull((element) => element.isOdd), null);
+      expect(iterable.firstOrNull(), 0);
+      expect(iterable.firstOrNull((element) => element.isOdd), 1);
+      expect(
+        iterable.firstOrNull((element) => element.isNegative),
+        null,
+      );
+    });
+  });
+
   group('Find', () {
     test('find', () {
       expect(iterable.find((element) => element.isEven), 0);

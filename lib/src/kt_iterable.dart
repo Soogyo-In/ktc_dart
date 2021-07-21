@@ -93,6 +93,36 @@ extension KtcIterable<E> on Iterable<E> {
     return iterator.current;
   }
 
+  /// Returns the first non-null value produced by [transform] function being applied to elements of this collection in iteration order, or throws [NoSuchElementException] if no non-null value was produced.
+  T firstNotNullOf<T>(T? Function(E element) transform) {
+    for (final element in this) {
+      final transformed = transform(element);
+
+      if (transformed != null) return transformed;
+    }
+
+    throw NoSuchElementException();
+  }
+
+  /// Returns the first non-null value produced by [transform] function being applied to elements of this collection in iteration order, or `null` if no non-null value was produced.
+  T? firstNotNullOfOrNull<T>(T? Function(E element) transform) {
+    for (final element in this) {
+      final transformed = transform(element);
+
+      if (transformed != null) return transformed;
+    }
+
+    return null;
+  }
+
+  /// Returns the first element, or `null` if the collection is empty.
+  /// If [test] is provided it returns the first element matching the given [test], or `null` if element was not found.
+  E? firstOrNull([bool Function(E element)? test]) => isEmpty
+      ? null
+      : test == null
+          ? first
+          : find(test);
+
   /// Returns the first element matching the given [test], or `null` if no such element was found.
   E? find(bool Function(E element) test) {
     final iterator = this.iterator;
