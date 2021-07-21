@@ -9,7 +9,7 @@ void main() {
     iterable = Iterable.generate(3);
   });
 
-  group('Numeric iterable', () {
+  group('NumIterable', () {
     test('average', () {
       expect([1, 2].average, 1.5);
       expect([1.0, 2.0].average, 1.5);
@@ -26,6 +26,36 @@ void main() {
       expect([double.nan, -1].average, isNaN);
       expect([1, -2.0].average, -0.5);
       expect([0, -0].average, 0.0);
+    });
+  });
+
+  group('DeepIterable', () {
+    test('flatten', () {
+      expect(
+        [
+          [1, 2],
+          [3, 4]
+        ].flatten,
+        [1, 2, 3, 4],
+      );
+
+      expect(
+        [
+          [1, 2],
+          [
+            3,
+            4,
+            [5, 6]
+          ]
+        ].flatten,
+        [
+          1,
+          2,
+          3,
+          4,
+          [5, 6]
+        ],
+      );
     });
   });
 

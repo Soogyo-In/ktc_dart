@@ -6,6 +6,11 @@ extension NumIterable on Iterable<num> {
       cast<num>().reduce((value, element) => value + element) / length;
 }
 
+extension DeepIterable<E> on Iterable<Iterable<E>> {
+  /// Returns a single [Iterable] of all elements from all [Iterable]s in the the [Iterable].
+  Iterable<E> get flatten => expand((element) => element);
+}
+
 extension KtcIterable<E> on Iterable<E> {
   /// Returns a [Map] containing [MapEntry]s provided by [transform] function applied to elements of the given collection.
   Map<K, V> associate<K, V>(MapEntry<K, V> Function(E element) transfrom) =>
