@@ -93,6 +93,29 @@ extension KtcIterable<E> on Iterable<E> {
     return iterator.current;
   }
 
+  /// Returns the first element matching the given [test], or `null` if no such element was found.
+  E? find(bool Function(E element) test) {
+    final iterator = this.iterator;
+
+    while (iterator.moveNext()) {
+      if (test(iterator.current)) return iterator.current;
+    }
+
+    return null;
+  }
+
+  /// Returns the last element matching the given [test], or `null` if no such element was found.
+  E? findLast(bool Function(E element) test) {
+    final iterator = this.iterator;
+    E? element;
+
+    while (iterator.moveNext()) {
+      if (test(iterator.current)) element = iterator.current;
+    }
+
+    return element;
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];

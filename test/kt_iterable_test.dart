@@ -85,7 +85,7 @@ void main() {
 
   test('count', () {
     expect(iterable.count(), 3);
-    expect(iterable.count((element) => element % 2 == 0), 2);
+    expect(iterable.count((element) => element.isEven), 2);
   });
 
   group('Distinct', () {
@@ -96,7 +96,7 @@ void main() {
     });
 
     test('distinctBy', () {
-      final distinctBy = iterable.distinctBy((element) => element % 2 == 0);
+      final distinctBy = iterable.distinctBy((element) => element.isEven);
 
       expect(distinctBy, [0, 1]);
     });
@@ -121,7 +121,7 @@ void main() {
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
-        (index, element) => (index + element) % 2 == 0,
+        (index, element) => (index + element).isEven,
       );
 
       expect(whereIndexed, [0, 1, 2]);
@@ -134,7 +134,7 @@ void main() {
     });
 
     test('whereNot', () {
-      final whereNot = iterable.whereNot((element) => element % 2 == 0);
+      final whereNot = iterable.whereNot((element) => element.isEven);
 
       expect(whereNot, [1]);
     });
@@ -143,6 +143,18 @@ void main() {
       final whereNotNull = [null, 1, null, 3].whereNotNull();
 
       expect(whereNotNull, [1, 3]);
+    });
+  });
+
+  group('Find', () {
+    test('find', () {
+      expect(iterable.find((element) => element.isEven), 0);
+      expect(iterable.find((element) => element.isNegative), null);
+    });
+
+    test('findLast', () {
+      expect(iterable.findLast((element) => element.isEven), 2);
+      expect(iterable.findLast((element) => element.isNegative), null);
     });
   });
 }
