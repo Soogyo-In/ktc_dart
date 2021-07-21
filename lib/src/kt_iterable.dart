@@ -45,4 +45,21 @@ extension KtcIterable<E> on Iterable<E> {
   /// If [test] is not provided it returns the number of elements in the [Iterable].
   int count([bool Function(E element)? test]) =>
       test == null ? length : where(test).length;
+
+  /// Returns a [List] containing only distinct elements from the given collection.
+  List<E> get distinct => toSet().toList();
+
+  /// Returns a [List] containing only elements from the given collection having distinct keys returned by the given [selector] function.
+  List<E> distinctBy<K>(K Function(E element) selector) {
+    final set = <K>{};
+    final list = <E>[];
+
+    for (final element in this) {
+      final key = selector(element);
+
+      if (set.add(key)) list.add(element);
+    }
+
+    return list;
+  }
 }

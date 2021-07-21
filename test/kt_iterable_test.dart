@@ -87,4 +87,17 @@ void main() {
     expect(iterable.count(), 3);
     expect(iterable.count((element) => element % 2 == 0), 2);
   });
+
+  group('Distinct', () {
+    test('distinct', () {
+      expect([...iterable, ...iterable].distinct, [0, 1, 2]);
+    });
+
+    test('distinctBy', () {
+      expect(
+        iterable.distinctBy((element) => element % 2 == 0),
+        [0, 1],
+      );
+    });
+  });
 }
