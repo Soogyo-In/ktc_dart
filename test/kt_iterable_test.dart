@@ -118,6 +118,13 @@ void main() {
     });
   });
 
+  test('expandIndexed', () {
+    final expandIndexed =
+        iterable.expandIndexed((index, element) => [index, element]);
+
+    expect(expandIndexed, [0, 0, 1, 1, 2, 2]);
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(

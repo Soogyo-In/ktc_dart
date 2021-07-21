@@ -93,6 +93,14 @@ extension KtcIterable<E> on Iterable<E> {
     return iterator.current;
   }
 
+  /// Returns a single [Iterable] of all elements yielded from results of [transform] function being invoked on each element and its index in the original collection.
+  Iterable<T> expandIndexed<T>(
+    Iterable<T> Function(int index, E element) transform,
+  ) {
+    var index = 0;
+    return expand((element) => transform(index++, element));
+  }
+
   /// Returns the first non-null value produced by [transform] function being applied to elements of this collection in iteration order, or throws [NoSuchElementException] if no non-null value was produced.
   T firstNotNullOf<T>(T? Function(E element) transform) {
     for (final element in this) {
