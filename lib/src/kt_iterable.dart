@@ -171,6 +171,12 @@ extension KtcIterable<E> on Iterable<E> {
     );
   }
 
+  /// Performs the given [action] on each element, providing sequential index with the element.
+  void forEachIndexed(void Function(int index, E element) action) {
+    var index = 0;
+    forEach((element) => action(index++, element));
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];

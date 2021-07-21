@@ -208,6 +208,17 @@ void main() {
     );
   });
 
+  test('forEachIndexed', () {
+    var i = 0;
+    var iterator = iterable.iterator..moveNext();
+
+    iterable.forEachIndexed((index, element) {
+      expect(index, i++);
+      expect(index, iterator.current);
+      iterator.moveNext();
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
