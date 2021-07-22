@@ -177,6 +177,46 @@ extension KtcIterable<E> on Iterable<E> {
     forEach((element) => action(index++, element));
   }
 
+  ///Groups elements of the original collection by the key returned by the given [keySelector] function applied to each element and returns a [Map] where each group key is associated with a [List] of corresponding elements.
+  Map<K, List<E>> groupBy<K>(K Function(E element) keySelector) {
+    final groups = <K, List<E>>{};
+
+    for (final element in this) {
+      final key = keySelector(element);
+      final group = groups[key];
+
+      if (group == null) {
+        groups[key] = [element];
+      } else {
+        group.add(element);
+      }
+    }
+
+    return groups;
+  }
+
+  /// Groups values returned by the [valueTransform] function applied to each element of the original collection by the key returned by the given [keySelector] function applied to the element and returns a [Map] where each group key is associated with a [List] of corresponding values.
+  Map<K, List<V>> groupAndTransformBy<K, V>(
+    K Function(E element) keySelector,
+    V Function(E element) valueTransform,
+  ) {
+    final groups = <K, List<V>>{};
+
+    for (final element in this) {
+      final key = keySelector(element);
+      final value = valueTransform(element);
+      final group = groups[key];
+
+      if (group == null) {
+        groups[key] = [value];
+      } else {
+        group.add(value);
+      }
+    }
+
+    return groups;
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];

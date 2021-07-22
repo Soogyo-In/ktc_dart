@@ -246,4 +246,27 @@ void main() {
       expect(whereNotNull, [1, 3]);
     });
   });
+
+  group('GroupBy', () {
+    test('groupBy', () {
+      final groupBy = iterable.groupBy((element) => element.isEven);
+
+      expect(groupBy, {
+        true: [0, 2],
+        false: [1],
+      });
+    });
+
+    test('groupAndTransformBy', () {
+      final grogroupAndTransformBy = iterable.groupAndTransformBy(
+        (element) => element.isEven,
+        (element) => element.toString(),
+      );
+
+      expect(grogroupAndTransformBy, {
+        true: ['0', '2'],
+        false: ['1'],
+      });
+    });
+  });
 }
