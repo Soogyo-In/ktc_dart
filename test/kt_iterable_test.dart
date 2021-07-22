@@ -219,6 +219,48 @@ void main() {
     });
   });
 
+  group('GroupBy', () {
+    test('groupBy', () {
+      final groupBy = iterable.groupBy((element) => element.isEven);
+
+      expect(groupBy, {
+        true: [0, 2],
+        false: [1],
+      });
+    });
+
+    test('groupAndTransformBy', () {
+      final grogroupAndTransformBy = iterable.groupAndTransformBy(
+        (element) => element.isEven,
+        (element) => element.toString(),
+      );
+
+      expect(grogroupAndTransformBy, {
+        true: ['0', '2'],
+        false: ['1'],
+      });
+    });
+  });
+
+  group('IndexOf', () {
+    test('indexOf', () {
+      expect(iterable.indexOf(-1), -1);
+      expect(iterable.indexOf(0), 0);
+      expect(iterable.indexOf(2), 2);
+      expect(iterable.indexOf(3), -1);
+    });
+
+    test('indexOfFirst', () {
+      expect(iterable.indexOfFirst((element) => element.isNegative), -1);
+      expect(iterable.indexOfFirst((element) => element.isEven), 0);
+    });
+
+    test('indexOfLast', () {
+      expect(iterable.indexOfLast((element) => element.isNegative), -1);
+      expect(iterable.indexOfLast((element) => element.isEven), 2);
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
@@ -244,29 +286,6 @@ void main() {
       final whereNotNull = [null, 1, null, 3].whereNotNull();
 
       expect(whereNotNull, [1, 3]);
-    });
-  });
-
-  group('GroupBy', () {
-    test('groupBy', () {
-      final groupBy = iterable.groupBy((element) => element.isEven);
-
-      expect(groupBy, {
-        true: [0, 2],
-        false: [1],
-      });
-    });
-
-    test('groupAndTransformBy', () {
-      final grogroupAndTransformBy = iterable.groupAndTransformBy(
-        (element) => element.isEven,
-        (element) => element.toString(),
-      );
-
-      expect(grogroupAndTransformBy, {
-        true: ['0', '2'],
-        false: ['1'],
-      });
     });
   });
 }

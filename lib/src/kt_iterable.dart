@@ -217,6 +217,43 @@ extension KtcIterable<E> on Iterable<E> {
     return groups;
   }
 
+  /// Returns first index of [element], or `-1` if the collection does not contain element.
+  int indexOf(E element) {
+    var index = 0;
+
+    for (final e in this) {
+      if (e == element) return index;
+      index++;
+    }
+
+    return -1;
+  }
+
+  /// Returns index of the first element matching the given [test], or `-1` if the collection does not contain such element.
+  int indexOfFirst(bool Function(E element) test) {
+    var index = 0;
+
+    for (final element in this) {
+      if (test(element)) return index;
+      index++;
+    }
+
+    return -1;
+  }
+
+  /// Returns index of the last element matching the given [test], or `-1` if the collection does not contain such element.
+  int indexOfLast(bool Function(E element) test) {
+    var lastIndex = -1;
+    var index = 0;
+
+    for (final element in this) {
+      if (test(element)) lastIndex = index;
+      index++;
+    }
+
+    return lastIndex;
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];
