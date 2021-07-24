@@ -259,6 +259,15 @@ void main() {
       expect(iterable.indexOfLast((element) => element.isNegative), -1);
       expect(iterable.indexOfLast((element) => element.isEven), 2);
     });
+
+    test('lastIndexOf', () {
+      iterable = [0, 0, 1, 1, 2, 2];
+
+      expect(iterable.lastIndexOf(-1), -1);
+      expect(iterable.lastIndexOf(0), 1);
+      expect(iterable.lastIndexOf(2), 5);
+      expect(iterable.lastIndexOf(3), -1);
+    });
   });
 
   test('intersect', () {
@@ -301,6 +310,13 @@ void main() {
       result3,
       'fruits: APPLE & BANANA & CHERRY & more... delicious',
     );
+  });
+
+  test('lastOrNull', () {
+    expect([].lastOrNull(), null);
+    expect(iterable.lastOrNull(), 2);
+    expect(iterable.lastOrNull((element) => element.isOdd), 1);
+    expect(iterable.lastOrNull((element) => element.isNegative), null);
   });
 
   group('Where', () {

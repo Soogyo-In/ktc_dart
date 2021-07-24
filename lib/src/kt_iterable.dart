@@ -301,6 +301,29 @@ extension KtcIterable<E> on Iterable<E> {
         transform: transform,
       ).toString();
 
+  /// Returns last index of [element], or `-1` if the collection does not contain element.
+  int lastIndexOf(E element) {
+    if (!contains(element)) return -1;
+
+    var lastIndex = -1;
+    var index = 0;
+
+    for (final elm in this) {
+      if (element == elm) lastIndex = index;
+      index++;
+    }
+
+    return lastIndex;
+  }
+
+  /// Returns the last element, or `null` if the collection is empty.
+  /// If [test] is provided it returns the last element matching the given [test], or `null` if no such element was found.
+  E? lastOrNull([bool Function(E element)? test]) => isEmpty
+      ? null
+      : test == null
+          ? last
+          : findLast(test);
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];
