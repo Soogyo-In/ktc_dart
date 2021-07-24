@@ -254,6 +254,53 @@ extension KtcIterable<E> on Iterable<E> {
     return lastIndex;
   }
 
+  /// Returns a [Set] containing all elements that are contained by both this collection and the specified collection.
+  Set<E> intersect(Iterable<E> other) => toSet()..retainAll(other);
+
+  /// Appends the [String] from all the elements separated using [separator] and using the given [prefix] and [postfix] if supplied.
+  S joinTo<S extends StringSink>({
+    required S buffer,
+    Object separator = ', ',
+    Object prefix = '',
+    Object postfix = '',
+    int limit = -1,
+    Object truncated = '...',
+    Object Function(E element)? transform,
+  }) {
+    buffer.write(prefix);
+    var count = 0;
+    for (final element in this) {
+      if (++count > 1) buffer.write(separator);
+      if (limit < 0 || count <= limit) {
+        buffer.write(transform?.call(element) ?? element);
+      } else {
+        break;
+      }
+    }
+    if (limit >= 0 && count > limit) buffer.write(truncated);
+    buffer.write(postfix);
+    return buffer;
+  }
+
+  /// Creates a [String] from all the elements separated using [separator] and using the given [prefix] and [postfix] if supplied.
+  String joinToString({
+    Object separator = ', ',
+    Object prefix = '',
+    Object postfix = '',
+    int limit = -1,
+    Object truncated = '...',
+    Object Function(E element)? transform,
+  }) =>
+      joinTo<StringBuffer>(
+        buffer: StringBuffer(),
+        separator: separator,
+        prefix: prefix,
+        postfix: postfix,
+        limit: limit,
+        truncated: truncated,
+        transform: transform,
+      ).toString();
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];

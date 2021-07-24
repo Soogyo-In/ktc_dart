@@ -261,6 +261,48 @@ void main() {
     });
   });
 
+  test('intersect', () {
+    expect(iterable.intersect([1, 2]), <int>{1, 2});
+    expect(iterable.intersect([2, 3]), <int>{2});
+    expect(iterable.intersect([3, 4]), <int>{});
+    expect(iterable.intersect([1, 1]), <int>{1});
+  });
+
+  test('joinToString', () {
+    final iterable = [
+      'apple',
+      'banana',
+      'cherry',
+      'durian',
+      'fig',
+      'grape',
+      'honeydew',
+    ];
+    final result1 = iterable.joinToString();
+    final result2 = iterable.joinToString(limit: 3);
+    final result3 = iterable.joinToString(
+      prefix: 'fruits: ',
+      postfix: 'delicious',
+      separator: ' & ',
+      transform: (element) => element.toUpperCase(),
+      truncated: 'more... ',
+      limit: 3,
+    );
+
+    expect(
+      result1,
+      'apple, banana, cherry, durian, fig, grape, honeydew',
+    );
+    expect(
+      result2,
+      'apple, banana, cherry, ...',
+    );
+    expect(
+      result3,
+      'fruits: APPLE & BANANA & CHERRY & more... delicious',
+    );
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
