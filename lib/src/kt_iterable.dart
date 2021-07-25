@@ -346,6 +346,16 @@ extension KtcIterable<E> on Iterable<E> {
     ).whereNotNull().cast<R>();
   }
 
+  /// Returns a [Iterable] containing only the non-null results of applying the given [transform] function to each element in the original collection.
+  Iterable<R> mapNotNull<R>(R? Function(E element) transform) {
+    final iterator = this.iterator;
+
+    return Iterable.generate(
+      length,
+      (index) => transform((iterator..moveNext()).current),
+    ).whereNotNull().cast<R>();
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];

@@ -333,6 +333,14 @@ void main() {
 
       expect(result, [1]);
     });
+
+    test('mapNotNull', () {
+      final result = iterable.mapNotNull(
+        (element) => element.isEven ? null : element,
+      );
+
+      expect(result, [1]);
+    });
   });
 
   group('Where', () {
