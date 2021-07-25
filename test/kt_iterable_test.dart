@@ -319,6 +319,22 @@ void main() {
     expect(iterable.lastOrNull((element) => element.isNegative), null);
   });
 
+  group('map', () {
+    test('mapIndexed', () {
+      final result = iterable.mapIndexed((index, element) => index + element);
+
+      expect(result, [0, 2, 4]);
+    });
+
+    test('mapIndexedNotNull', () {
+      final result = iterable.mapIndexedNotNull(
+        (index, element) => (index * element).isEven ? null : element,
+      );
+
+      expect(result, [1]);
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(

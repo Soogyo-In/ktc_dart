@@ -324,6 +324,28 @@ extension KtcIterable<E> on Iterable<E> {
           ? last
           : findLast(test);
 
+  /// Returns a [Iterable] containing the results of applying the given [transform] function to each element and its index in the original collection.
+  Iterable<R> mapIndexed<R>(R Function(int index, E element) transform) {
+    final iterator = this.iterator;
+
+    return Iterable.generate(
+      length,
+      (index) => transform(index, (iterator..moveNext()).current),
+    );
+  }
+
+  /// Returns a [Iterable] containing only the non-null results of applying the given transform function to each element and its index in the original collection.
+  Iterable<R> mapIndexedNotNull<R>(
+    R? Function(int index, E element) transform,
+  ) {
+    final iterator = this.iterator;
+
+    return Iterable.generate(
+      length,
+      (index) => transform(index, (iterator..moveNext()).current),
+    ).whereNotNull().cast<R>();
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];
