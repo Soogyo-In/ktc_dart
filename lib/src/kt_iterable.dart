@@ -11,6 +11,21 @@ extension DeepIterable<E> on Iterable<Iterable<E>> {
   Iterable<E> get flatten => expand((element) => element);
 }
 
+extension ComparableIteratable<E extends Comparable> on Iterable<E> {
+  /// Returns the largest element or `null` if there are no elements.
+  E? get maxOrNull {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var maxElement = iterator.current;
+    for (final element in skip(1)) {
+      if (maxElement.compareTo(element) < 0) maxElement = element;
+    }
+
+    return maxElement;
+  }
+}
+
 extension KtcIterable<E> on Iterable<E> {
   /// Returns a [Map] containing [MapEntry]s provided by [transform] function applied to elements of the given collection.
   Map<K, V> associate<K, V>(MapEntry<K, V> Function(E element) transfrom) =>
@@ -354,6 +369,106 @@ extension KtcIterable<E> on Iterable<E> {
       length,
       (index) => transform((iterator..moveNext()).current),
     ).whereNotNull().cast<R>();
+  }
+
+  /// Returns the first element yielding the largest value of the given [selector] or null if there are no elements.
+  E? maxByOrNull<R extends Comparable>(R Function(E element) selector) {
+    if (isEmpty) return null;
+    if (length == 1) return first;
+
+    final iterator = this.iterator..moveNext();
+    E maxElement = iterator.current;
+    R maxValue = selector(maxElement);
+
+    while (iterator.moveNext()) {
+      final current = iterator.current;
+      final value = selector(current);
+
+      if (maxValue.compareTo(value) < 0) {
+        maxElement = current;
+        maxValue = value;
+      }
+    }
+
+    return maxElement;
+  }
+
+  /// Returns the largest value among all values produced by [selector] function applied to each element in the collection.
+  R maxOf<R extends Comparable>(R Function(E element) selector) {
+    if (isEmpty) throw NoSuchElementException();
+
+    final iterator = this.iterator..moveNext();
+    var maxValue = selector(iterator.current);
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (maxValue.compareTo(value) < 0) maxValue = value;
+    }
+
+    return maxValue;
+  }
+
+  /// Returns the largest value among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  R? maxOfOrNull<R extends Comparable>(R Function(E element) selector) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var maxValue = selector(iterator.current);
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (maxValue.compareTo(value) < 0) maxValue = value;
+    }
+
+    return maxValue;
+  }
+
+  /// Returns the largest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection.
+  R maxOfWith<R>(Comparator<R> comparator, R Function(E element) selector) {
+    if (isEmpty) throw NoSuchElementException();
+
+    final iterator = this.iterator..moveNext();
+    var maxValue = selector(iterator.current);
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (comparator(maxValue, value) < 0) maxValue = value;
+    }
+
+    return maxValue;
+  }
+
+  /// Returns the largest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  R? maxOfWithOrNull<R>(
+    Comparator<R> comparator,
+    R Function(E element) selector,
+  ) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var maxValue = selector(iterator.current);
+
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (comparator(maxValue, value) < 0) maxValue = value;
+    }
+
+    return maxValue;
+  }
+
+  /// Returns the first element having the largest value according to the provided [comparator] or null if there are no elements.
+  E? maxWithOrNull(Comparator<E> comparator) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var maxElement = iterator.current;
+
+    for (final element in skip(1)) {
+      if (comparator(maxElement, element) < 0) maxElement = element;
+    }
+
+    return maxElement;
   }
 
   /// Returns a [List] containing only elements matching the given [test].

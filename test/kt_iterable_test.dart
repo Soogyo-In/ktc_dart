@@ -343,6 +343,106 @@ void main() {
     });
   });
 
+  group('max', () {
+    test('maxOrNull', () {
+      expect(<num>[].maxOrNull, null);
+      expect(iterable.maxOrNull, 2);
+    });
+
+    test('maxByOrNull', () {
+      final iterable = [
+        [1],
+        [1, 2],
+        [1, 2, 3],
+      ];
+      Comparable selector(List element) => element.length;
+
+      expect(<List>[].maxByOrNull(selector), null);
+      expect(
+          [
+            [3]
+          ].maxByOrNull(selector),
+          [3]);
+      expect(iterable.maxByOrNull(selector), [1, 2, 3]);
+    });
+
+    test('maxOf', () {
+      final iterable = [
+        [1],
+        [1, 2],
+        [1, 2, 3],
+      ];
+
+      Comparable selector(List element) => element.length;
+
+      expect(
+        () => <List>[].maxOf(selector),
+        throwsA(TypeMatcher<NoSuchElementException>()),
+      );
+      expect(
+        [
+          [3]
+        ].maxOf(selector),
+        1,
+      );
+      expect(iterable.maxOf(selector), 3);
+    });
+
+    test('maxOfOrNull', () {
+      final iterable = [
+        [1],
+        [1, 2],
+        [1, 2, 3],
+      ];
+
+      Comparable selector(List element) => element.length;
+
+      expect(<List>[].maxOfOrNull(selector), null);
+      expect(
+        [
+          [3]
+        ].maxOfOrNull(selector),
+        1,
+      );
+      expect(iterable.maxOfOrNull(selector), 3);
+    });
+
+    test('maxOfWith', () {
+      int comparator(int a, int b) => a.compareTo(b);
+      int selector(int element) => -element;
+
+      expect(
+        () => <int>[].maxOfWith(comparator, selector),
+        throwsA(TypeMatcher<NoSuchElementException>()),
+      );
+      expect([3].maxOfWith(comparator, selector), -3);
+      expect(iterable.maxOfWith(comparator, selector), 0);
+    });
+
+    test('maxOfWithOrNull', () {
+      int comparator(int a, int b) => a.compareTo(b);
+      int selector(int element) => -element;
+
+      expect(<int>[].maxOfWithOrNull(comparator, selector), null);
+      expect([3].maxOfWithOrNull(comparator, selector), -3);
+      expect(iterable.maxOfWithOrNull(comparator, selector), 0);
+    });
+
+    test('maxOrNull', () {
+      expect(<int>[].maxOrNull, null);
+      expect([3].maxOrNull, 3);
+      expect(iterable.maxOrNull, 2);
+    });
+
+    test('maxWithOrNull', () {
+      int comparator(int a, int b) => a.compareTo(b);
+
+      expect(<int>[].maxWithOrNull(comparator), null);
+      expect([3].maxWithOrNull(comparator), 3);
+      expect(iterable.maxWithOrNull(comparator), 2);
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
