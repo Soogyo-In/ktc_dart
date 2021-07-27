@@ -558,4 +558,76 @@ void main() {
       expect(whereNotNull, [1, 3]);
     });
   });
+
+  group('operator', () {
+    test('minus', () {
+      expect([] - [1], []);
+      expect([1] - [], [1]);
+      expect([1] - [1], []);
+      expect([1] - [1, 2], []);
+      expect([1, 2] - [1], [2]);
+      expect([1, 2] - [1, 3], [2]);
+      expect([1, 2] - [3, 4], [1, 2]);
+      expect([1, 1, 2] - [1], [2]);
+      expect([1, 1, 2] - [1, 2], []);
+    });
+
+    test('minus assign', () {
+      Iterable iterable = [1, 1, 2];
+
+      iterable -= [];
+      expect(iterable, [1, 1, 2]);
+      iterable -= [3, 4];
+      expect(iterable, [1, 1, 2]);
+      iterable -= [2, 3];
+      expect(iterable, [1, 1]);
+      iterable -= [1];
+      expect(iterable, []);
+      iterable -= [1];
+      expect(iterable, []);
+    });
+
+    test('plus', () {
+      expect([] + [2], [2]);
+      expect([1] + [], [1]);
+      expect([1] + [2], [1, 2]);
+      expect([2] + [1], [2, 1]);
+      expect([1] + [1, 2], [1, 1, 2]);
+      expect([1, 2] + [1], [1, 2, 1]);
+      expect([1, 2] + [3, 4], [1, 2, 3, 4]);
+    });
+
+    test('plus assign', () {
+      Iterable iterable = [];
+
+      iterable += [1];
+      expect(iterable, [1]);
+      iterable += [2, 3];
+      expect(iterable, [1, 2, 3]);
+      iterable += [2, 3];
+      expect(iterable, [1, 2, 3, 2, 3]);
+      iterable += [4, 4];
+      expect(iterable, [1, 2, 3, 2, 3, 4, 4]);
+      iterable += [];
+      expect(iterable, [1, 2, 3, 2, 3, 4, 4]);
+    });
+
+    test('shift left', () {
+      expect(() => iterable << -1, throwsA(TypeMatcher<ArgumentError>()));
+      expect(iterable << 0, [0, 1, 2]);
+      expect(iterable << 1, [1, 2]);
+      expect(iterable << 2, [2]);
+      expect(iterable << 3, []);
+      expect(iterable << 4, []);
+    });
+
+    test('shift right', () {
+      expect(() => iterable >> -1, throwsA(TypeMatcher<ArgumentError>()));
+      expect(iterable >> 0, [0, 1, 2]);
+      expect(iterable >> 1, [0, 1]);
+      expect(iterable >> 2, [0]);
+      expect(iterable >> 3, []);
+      expect(() => iterable >> 4, throwsA(TypeMatcher<RangeError>()));
+    });
+  });
 }

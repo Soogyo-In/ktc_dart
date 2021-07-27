@@ -352,7 +352,7 @@ extension KtcIterable<E> on Iterable<E> {
           ? last
           : findLast(test);
 
-  /// Returns a [Iterable] containing the results of applying the given [transform] function to each element and its index in the original collection.
+  /// Returns an [Iterable] containing the results of applying the given [transform] function to each element and its index in the original collection.
   Iterable<R> mapIndexed<R>(R Function(int index, E element) transform) {
     final iterator = this.iterator;
 
@@ -362,7 +362,7 @@ extension KtcIterable<E> on Iterable<E> {
     );
   }
 
-  /// Returns a [Iterable] containing only the non-null results of applying the given transform function to each element and its index in the original collection.
+  /// Returns an [Iterable] containing only the non-null results of applying the given transform function to each element and its index in the original collection.
   Iterable<R> mapIndexedNotNull<R>(
     R? Function(int index, E element) transform,
   ) {
@@ -374,7 +374,7 @@ extension KtcIterable<E> on Iterable<E> {
     ).whereNotNull().cast<R>();
   }
 
-  /// Returns a [Iterable] containing only the non-null results of applying the given [transform] function to each element in the original collection.
+  /// Returns an [Iterable] containing only the non-null results of applying the given [transform] function to each element in the original collection.
   Iterable<R> mapNotNull<R>(R? Function(E element) transform) {
     final iterator = this.iterator;
 
@@ -596,14 +596,43 @@ extension KtcIterable<E> on Iterable<E> {
     return list;
   }
 
-  /// Returns a [Iterable] containing all elements that are instances of specified type parameter [T].
+  /// Returns an [Iterable] containing all elements that are instances of specified type parameter [T].
   Iterable<T> whereIsInstance<T>() =>
       where((element) => element is T).cast<T>();
 
-  /// Returns a [Iterable] containing all elements not matching the given [test].
+  /// Returns an [Iterable] containing all elements not matching the given [test].
   Iterable<E> whereNot(bool Function(E element) test) =>
       where((element) => !test(element));
 
-  /// Returns a [Iterable] containing all elements that are not `null`.
+  /// Returns an [Iterable] containing all elements that are not `null`.
   Iterable<E> whereNotNull() => where((element) => element != null);
+
+  /// Returns an [Iterable] containing all elements of the original collection except the elements contained in the [other] collection.
+  Iterable<E> operator -(Iterable other) =>
+      where((element) => !other.contains(element));
+
+  /// Returns an [Iterable] containing all elements of the original collection and then all elements of the [other] collection.
+  Iterable<E> operator +(Iterable other) => Iterable.generate(
+        length + other.length,
+        (index) =>
+            index < length ? elementAt(index) : other.elementAt(index - length),
+      );
+
+  /// Returns an [Iterable] that has been removed by the number of [count] from the beginning.
+  ///
+  /// If [count] is negative it `throws` [ArgumentError].
+  ///
+  /// It is not in the Kotlin collection library. But I added it because it looks useful.
+  Iterable<E> operator <<(int count) => count.isNegative
+      ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
+      : skip(count);
+
+  /// Returns an [Iterable] that has been removed by the number of [count] from the end.
+  ///
+  /// If [count] is negative it `throws` [ArgumentError].
+  ///
+  /// It is not in the Kotlin collection library. But I added it because it looks useful.
+  Iterable<E> operator >>(int count) => count.isNegative
+      ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
+      : take(length - count);
 }
