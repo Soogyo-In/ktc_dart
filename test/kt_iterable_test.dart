@@ -428,18 +428,106 @@ void main() {
       expect(iterable.maxOfWithOrNull(comparator, selector), 0);
     });
 
-    test('maxOrNull', () {
-      expect(<int>[].maxOrNull, null);
-      expect([3].maxOrNull, 3);
-      expect(iterable.maxOrNull, 2);
-    });
-
     test('maxWithOrNull', () {
       int comparator(int a, int b) => a.compareTo(b);
 
       expect(<int>[].maxWithOrNull(comparator), null);
       expect([3].maxWithOrNull(comparator), 3);
       expect(iterable.maxWithOrNull(comparator), 2);
+    });
+  });
+
+  group('min', () {
+    test('minOrNull', () {
+      expect(<num>[].minOrNull, null);
+      expect(iterable.minOrNull, 0);
+    });
+
+    test('minByOrNull', () {
+      final iterable = [
+        [1],
+        [1, 2],
+        [1, 2, 3],
+      ];
+      Comparable selector(List element) => element.length;
+
+      expect(<List>[].minByOrNull(selector), null);
+      expect(
+          [
+            [3]
+          ].minByOrNull(selector),
+          [3]);
+      expect(iterable.minByOrNull(selector), [1]);
+    });
+
+    test('minOf', () {
+      final iterable = [
+        [1],
+        [1, 2],
+        [1, 2, 3],
+      ];
+
+      Comparable selector(List element) => element.length;
+
+      expect(
+        () => <List>[].minOf(selector),
+        throwsA(TypeMatcher<NoSuchElementException>()),
+      );
+      expect(
+        [
+          [3]
+        ].minOf(selector),
+        1,
+      );
+      expect(iterable.minOf(selector), 1);
+    });
+
+    test('minOfOrNull', () {
+      final iterable = [
+        [1],
+        [1, 2],
+        [1, 2, 3],
+      ];
+
+      Comparable selector(List element) => element.length;
+
+      expect(<List>[].minOfOrNull(selector), null);
+      expect(
+        [
+          [3]
+        ].minOfOrNull(selector),
+        1,
+      );
+      expect(iterable.minOfOrNull(selector), 1);
+    });
+
+    test('minOfWith', () {
+      int comparator(int a, int b) => a.compareTo(b);
+      int selector(int element) => -element;
+
+      expect(
+        () => <int>[].minOfWith(comparator, selector),
+        throwsA(TypeMatcher<NoSuchElementException>()),
+      );
+      expect([3].minOfWith(comparator, selector), -3);
+      expect(iterable.minOfWith(comparator, selector), -2);
+    });
+
+    test('minOfWithOrNull', () {
+      int comparator(int a, int b) => a.compareTo(b);
+      int selector(int element) => -element;
+
+      expect(<int>[].minOfWithOrNull(comparator, selector), null);
+      expect([3].minOfWithOrNull(comparator, selector), -3);
+      expect(iterable.minOfWithOrNull(comparator, selector), -2);
+    });
+
+    test('minWithOrNull', () {
+      int comparator(int a, int b) => a.compareTo(b);
+
+      expect(<int>[].minWithOrNull(comparator), null);
+      expect([3].minWithOrNull(comparator), 3);
+      expect(iterable.minWithOrNull(comparator), 0);
     });
   });
 

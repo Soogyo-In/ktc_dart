@@ -24,6 +24,19 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 
     return maxElement;
   }
+
+  /// Returns the smallest element or `null` if there are no elements.
+  E? get minOrNull {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var minElement = iterator.current;
+    for (final element in skip(1)) {
+      if (minElement.compareTo(element) > 0) minElement = element;
+    }
+
+    return minElement;
+  }
 }
 
 extension KtcIterable<E> on Iterable<E> {
@@ -469,6 +482,106 @@ extension KtcIterable<E> on Iterable<E> {
     }
 
     return maxElement;
+  }
+
+  /// Returns the first element yielding the smallest value of the given [selector] function or `null` if there are no elements.
+  E? minByOrNull<R extends Comparable>(R Function(E element) selector) {
+    if (isEmpty) return null;
+    if (length == 1) return first;
+
+    final iterator = this.iterator..moveNext();
+    E minElement = iterator.current;
+    R minValue = selector(minElement);
+
+    while (iterator.moveNext()) {
+      final current = iterator.current;
+      final value = selector(current);
+
+      if (minValue.compareTo(value) > 0) {
+        minElement = current;
+        minValue = value;
+      }
+    }
+
+    return minElement;
+  }
+
+  /// Returns the smallest value among all values produced by [selector] function applied to each element in the collection.
+  R minOf<R extends Comparable>(R Function(E element) selector) {
+    if (isEmpty) throw NoSuchElementException();
+
+    final iterator = this.iterator..moveNext();
+    var minValue = selector(iterator.current);
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (minValue.compareTo(value) > 0) minValue = value;
+    }
+
+    return minValue;
+  }
+
+  /// Returns the smallest value among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  R? minOfOrNull<R extends Comparable>(R Function(E element) selector) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var minValue = selector(iterator.current);
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (minValue.compareTo(value) > 0) minValue = value;
+    }
+
+    return minValue;
+  }
+
+  /// Returns the smallest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection.
+  R minOfWith<R>(Comparator<R> comparator, R Function(E element) selector) {
+    if (isEmpty) throw NoSuchElementException();
+
+    final iterator = this.iterator..moveNext();
+    var minValue = selector(iterator.current);
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (comparator(minValue, value) > 0) minValue = value;
+    }
+
+    return minValue;
+  }
+
+  /// Returns the smallest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  R? minOfWithOrNull<R>(
+    Comparator<R> comparator,
+    R Function(E element) selector,
+  ) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var minValue = selector(iterator.current);
+
+    while (iterator.moveNext()) {
+      final value = selector(iterator.current);
+
+      if (comparator(minValue, value) > 0) minValue = value;
+    }
+
+    return minValue;
+  }
+
+  /// Returns the first element having the smallest value according to the provided [comparator] or `null` if there are no elements.
+  E? minWithOrNull(Comparator<E> comparator) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    var minElement = iterator.current;
+
+    for (final element in skip(1)) {
+      if (comparator(minElement, element) > 0) minElement = element;
+    }
+
+    return minElement;
   }
 
   /// Returns a [List] containing only elements matching the given [test].
