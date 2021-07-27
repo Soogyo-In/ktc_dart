@@ -343,7 +343,7 @@ void main() {
     });
   });
 
-  group('max', () {
+  group('Max', () {
     test('maxOrNull', () {
       expect(<num>[].maxOrNull, null);
       expect(iterable.maxOrNull, 2);
@@ -437,7 +437,7 @@ void main() {
     });
   });
 
-  group('min', () {
+  group('Min', () {
     test('minOrNull', () {
       expect(<num>[].minOrNull, null);
       expect(iterable.minOrNull, 0);
@@ -537,6 +537,26 @@ void main() {
     expect([].none((element) => element == null), true);
     expect(iterable.none((element) => element.isNegative), true);
     expect(iterable.none((element) => element.isEven), false);
+  });
+
+  group('OnEach', () {
+    test('onEach', () {
+      var idx = 0;
+      final iter = iterable.onEach((element) {
+        expect(element, idx++);
+      });
+      expect(iter, iterable);
+    });
+
+    test('onEachIndexed', () {
+      var idx = 0;
+      final iter = iterable.onEachIndexed((index, element) {
+        expect(element, idx);
+        expect(index, idx);
+        idx++;
+      });
+      expect(iter, iterable);
+    });
   });
 
   group('Where', () {
