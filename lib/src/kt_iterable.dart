@@ -590,6 +590,26 @@ extension KtcIterable<E> on Iterable<E> {
   bool none([bool Function(E element)? test]) =>
       test == null ? isEmpty : !any(test);
 
+  /// Performs the given [action] on each element and returns the collection itself afterwards.
+  Iterable<E> onEach(void Function(E element) action) {
+    for (final element in this) {
+      action(element);
+    }
+
+    return this;
+  }
+
+  /// Performs the given [action] on each element, providing sequential index with the element, and returns the collection itself afterwards.
+  Iterable<E> onEachIndexed(void Function(int index, E element) action) {
+    var index = 0;
+
+    for (final element in this) {
+      action(index++, element);
+    }
+
+    return this;
+  }
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];
