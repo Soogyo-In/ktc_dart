@@ -7,7 +7,8 @@ extension NumIterable on Iterable<num> {
 }
 
 extension DeepIterable<E> on Iterable<Iterable<E>> {
-  /// Returns a single [Iterable] of all elements from all [Iterable]s in the the [Iterable].
+  /// Returns a single [Iterable] of all elements from all [Iterable]s in the
+  /// the [Iterable].
   Iterable<E> get flatten => expand((element) => element);
 }
 
@@ -40,34 +41,43 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 }
 
 extension KtcIterable<E> on Iterable<E> {
-  /// Returns a [Map] containing [MapEntry]s provided by [transform] function applied to elements of the given collection.
+  /// Returns a [Map] containing [MapEntry]s provided by [transform] function
+  /// applied to elements of the given collection.
   Map<K, V> associate<K, V>(MapEntry<K, V> Function(E element) transfrom) =>
       Map.fromEntries(map(transfrom));
 
-  /// Returns a [Map] containing the elements from the given collection indexed by the key returned from [keySelector] function applied to each element.
+  /// Returns a [Map] containing the elements from the given collection indexed
+  /// by the key returned from [keySelector] function applied to each element.
   Map<K, E> associateBy<K>(K Function(E element) keySelector) =>
       Map.fromIterables(map(keySelector), this);
 
-  /// Returns a [Map] containing the values provided by [valueTransform] and indexed by [keySelector] functions applied to elements of the given collection.
+  /// Returns a [Map] containing the values provided by [valueTransform] and
+  /// indexed by [keySelector] functions applied to elements of the given
+  /// collection.
   Map<K, V> associateAndTransformBy<K, V>(
     K Function(E element) keySelector,
     V Function(E element) valueTransform,
   ) =>
       Map.fromIterables(map(keySelector), map(valueTransform));
 
-  /// Returns a [Map] where keys are elements from the given collection and values are produced by the [valueSelector] function applied to each element.
+  /// Returns a [Map] where keys are elements from the given collection and
+  /// values are produced by the [valueSelector] function applied to each
+  /// element.
   Map<E, V> associateWith<V>(V Function(E element) valueSelector) =>
       Map.fromIterables(this, map(valueSelector));
 
-  /// Splits this collection into a [Iterable] of iterables each not exceeding the given [size].
+  /// Splits this collection into a [Iterable] of iterables each not exceeding
+  /// the given [size].
   ///
-  /// The last [Iterable] in the resulting [Iterable] may have fewer elements than the given [size].
+  /// The last [Iterable] in the resulting [Iterable] may have fewer elements
+  /// than the given [size].
   Iterable<Iterable<E>> chunked(int size) => Iterable.generate(
         length % size == 0 ? length ~/ size : length ~/ size + 1,
         (index) => skip(index * size).take(size),
       );
 
-  /// Splits this collection into several iterables each not exceeding the given [size] and applies the given [transform] function to an each.
+  /// Splits this collection into several iterables each not exceeding the given
+  /// [size] and applies the given [transform] function to an each.
   Iterable<T> chunkedAndTransform<T>(
     int size,
     T Function(Iterable<E> chunk) transmform,
@@ -75,14 +85,17 @@ extension KtcIterable<E> on Iterable<E> {
       chunked(size).map(transmform);
 
   /// Returns the number of elements matching the given [test].
-  /// If [test] is not provided it returns the number of elements in the [Iterable].
+  /// If [test] is not provided it returns the number of elements in the
+  /// [Iterable].
   int count([bool Function(E element)? test]) =>
       test == null ? length : where(test).length;
 
-  /// Returns a [List] containing only distinct elements from the given collection.
+  /// Returns a [List] containing only distinct elements from the given
+  /// collection.
   List<E> get distinct => toSet().toList();
 
-  /// Returns a [List] containing only elements from the given collection having distinct keys returned by the given [selector] function.
+  /// Returns a [List] containing only elements from the given collection having
+  /// distinct keys returned by the given [selector] function.
   List<E> distinctBy<K>(K Function(E element) selector) {
     final set = <K>{};
     final list = <E>[];
@@ -96,7 +109,9 @@ extension KtcIterable<E> on Iterable<E> {
     return list;
   }
 
-  /// Returns an element at the given [index] or the result of calling the [defaultValue] function if the [index] is out of bounds of this collection.
+  /// Returns an element at the given [index] or the result of calling the
+  /// [defaultValue] function if the [index] is out of bounds of this
+  /// collection.
   E elementAtOrElse(int index, E Function(int index) defaultValue) {
     if (length <= index || index < 0) return defaultValue(index);
 
@@ -111,7 +126,8 @@ extension KtcIterable<E> on Iterable<E> {
     return iterator.current;
   }
 
-  /// Returns an element at the given [index] or `null` if the [index] is out of bounds of this collection.
+  /// Returns an element at the given [index] or `null` if the [index] is out of
+  /// bounds of this collection.
   E? elementAtOrNull(int index) {
     if (length <= index || index < 0) return null;
 
@@ -126,7 +142,9 @@ extension KtcIterable<E> on Iterable<E> {
     return iterator.current;
   }
 
-  /// Returns a single [Iterable] of all elements yielded from results of [transform] function being invoked on each element and its index in the original collection.
+  /// Returns a single [Iterable] of all elements yielded from results of
+  /// [transform] function being invoked on each element and its index in the
+  /// original collection.
   Iterable<T> expandIndexed<T>(
     Iterable<T> Function(int index, E element) transform,
   ) {
@@ -134,7 +152,9 @@ extension KtcIterable<E> on Iterable<E> {
     return expand((element) => transform(index++, element));
   }
 
-  /// Returns the first non-null value produced by [transform] function being applied to elements of this collection in iteration order, or throws [NoSuchElementException] if no non-null value was produced.
+  /// Returns the first non-null value produced by [transform] function being
+  /// applied to elements of this collection in iteration order, or throws
+  /// [NoSuchElementException] if no non-null value was produced.
   T firstNotNullOf<T>(T? Function(E element) transform) {
     for (final element in this) {
       final transformed = transform(element);
@@ -145,7 +165,9 @@ extension KtcIterable<E> on Iterable<E> {
     throw NoSuchElementException();
   }
 
-  /// Returns the first non-null value produced by [transform] function being applied to elements of this collection in iteration order, or `null` if no non-null value was produced.
+  /// Returns the first non-null value produced by [transform] function being
+  /// applied to elements of this collection in iteration order, or `null` if
+  /// no non-null value was produced.
   T? firstNotNullOfOrNull<T>(T? Function(E element) transform) {
     for (final element in this) {
       final transformed = transform(element);
@@ -157,14 +179,16 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns the first element, or `null` if the collection is empty.
-  /// If [test] is provided it returns the first element matching the given [test], or `null` if element was not found.
+  /// If [test] is provided it returns the first element matching the given
+  /// [test], or `null` if element was not found.
   E? firstOrNull([bool Function(E element)? test]) => isEmpty
       ? null
       : test == null
           ? first
           : find(test);
 
-  /// Returns the first element matching the given [test], or `null` if no such element was found.
+  /// Returns the first element matching the given [test], or `null` if no such
+  /// element was found.
   E? find(bool Function(E element) test) {
     final iterator = this.iterator;
 
@@ -175,7 +199,8 @@ extension KtcIterable<E> on Iterable<E> {
     return null;
   }
 
-  /// Returns the last element matching the given [test], or `null` if no such element was found.
+  /// Returns the last element matching the given [test], or `null` if no such
+  /// element was found.
   E? findLast(bool Function(E element) test) {
     final iterator = this.iterator;
     E? element;
@@ -187,7 +212,9 @@ extension KtcIterable<E> on Iterable<E> {
     return element;
   }
 
-  /// Accumulates value starting with [initialValue] and applying operation from left to right to current accumulator value and each element with its index in the original collection.
+  /// Accumulates value starting with [initialValue] and applying operation from
+  /// left to right to current accumulator value and each element with its index
+  /// in the original collection.
   T foldIndexed<T>(
     T initialValue,
     T Function(int index, T previousValue, E element) combine,
@@ -199,13 +226,17 @@ extension KtcIterable<E> on Iterable<E> {
     );
   }
 
-  /// Performs the given [action] on each element, providing sequential index with the element.
+  /// Performs the given [action] on each element, providing sequential index
+  /// with the element.
   void forEachIndexed(void Function(int index, E element) action) {
     var index = 0;
     forEach((element) => action(index++, element));
   }
 
-  ///Groups elements of the original collection by the key returned by the given [keySelector] function applied to each element and returns a [Map] where each group key is associated with a [List] of corresponding elements.
+  /// Groups elements of the original collection by the key returned by the
+  /// given [keySelector] function applied to each element and returns a [Map]
+  /// where each group key is associated with a [List] of corresponding
+  /// elements.
   Map<K, List<E>> groupBy<K>(K Function(E element) keySelector) {
     final groups = <K, List<E>>{};
 
@@ -223,7 +254,10 @@ extension KtcIterable<E> on Iterable<E> {
     return groups;
   }
 
-  /// Groups values returned by the [valueTransform] function applied to each element of the original collection by the key returned by the given [keySelector] function applied to the element and returns a [Map] where each group key is associated with a [List] of corresponding values.
+  /// Groups values returned by the [valueTransform] function applied to each
+  /// element of the original collection by the key returned by the given
+  /// [keySelector] function applied to the element and returns a [Map] where
+  /// each group key is associated with a [List] of corresponding values.
   Map<K, List<V>> groupAndTransformBy<K, V>(
     K Function(E element) keySelector,
     V Function(E element) valueTransform,
@@ -245,7 +279,8 @@ extension KtcIterable<E> on Iterable<E> {
     return groups;
   }
 
-  /// Returns first index of [element], or `-1` if the collection does not contain element.
+  /// Returns first index of [element], or `-1` if the collection does not
+  /// contain element.
   int indexOf(E element) {
     var index = 0;
 
@@ -257,7 +292,8 @@ extension KtcIterable<E> on Iterable<E> {
     return -1;
   }
 
-  /// Returns index of the first element matching the given [test], or `-1` if the collection does not contain such element.
+  /// Returns index of the first element matching the given [test], or `-1` if
+  /// the collection does not contain such element.
   int indexOfFirst(bool Function(E element) test) {
     var index = 0;
 
@@ -269,7 +305,8 @@ extension KtcIterable<E> on Iterable<E> {
     return -1;
   }
 
-  /// Returns index of the last element matching the given [test], or `-1` if the collection does not contain such element.
+  /// Returns index of the last element matching the given [test], or `-1` if
+  /// the collection does not contain such element.
   int indexOfLast(bool Function(E element) test) {
     var lastIndex = -1;
     var index = 0;
@@ -282,10 +319,12 @@ extension KtcIterable<E> on Iterable<E> {
     return lastIndex;
   }
 
-  /// Returns a [Set] containing all elements that are contained by both this collection and the specified collection.
+  /// Returns a [Set] containing all elements that are contained by both this
+  /// collection and the specified collection.
   Set<E> intersect(Iterable<E> other) => toSet()..retainAll(other);
 
-  /// Appends the [String] from all the elements separated using [separator] and using the given [prefix] and [postfix] if supplied.
+  /// Appends the [String] from all the elements separated using [separator] and
+  /// using the given [prefix] and [postfix] if supplied.
   S joinTo<S extends StringSink>({
     required S buffer,
     Object separator = ', ',
@@ -310,7 +349,8 @@ extension KtcIterable<E> on Iterable<E> {
     return buffer;
   }
 
-  /// Creates a [String] from all the elements separated using [separator] and using the given [prefix] and [postfix] if supplied.
+  /// Creates a [String] from all the elements separated using [separator] and
+  /// using the given [prefix] and [postfix] if supplied.
   String joinToString({
     Object separator = ', ',
     Object prefix = '',
@@ -329,7 +369,8 @@ extension KtcIterable<E> on Iterable<E> {
         transform: transform,
       ).toString();
 
-  /// Returns last index of [element], or `-1` if the collection does not contain element.
+  /// Returns last index of [element], or `-1` if the collection does not
+  /// contain element.
   int lastIndexOf(E element) {
     if (!contains(element)) return -1;
 
@@ -345,14 +386,17 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns the last element, or `null` if the collection is empty.
-  /// If [test] is provided it returns the last element matching the given [test], or `null` if no such element was found.
+  /// If [test] is provided it returns the last element matching the given
+  /// [test], or `null` if no such element was found.
   E? lastOrNull([bool Function(E element)? test]) => isEmpty
       ? null
       : test == null
           ? last
           : findLast(test);
 
-  /// Returns an [Iterable] containing the results of applying the given [transform] function to each element and its index in the original collection.
+  /// Returns an [Iterable] containing the results of applying the given
+  /// [transform] function to each element and its index in the original
+  /// collection.
   Iterable<R> mapIndexed<R>(R Function(int index, E element) transform) {
     final iterator = this.iterator;
 
@@ -362,7 +406,9 @@ extension KtcIterable<E> on Iterable<E> {
     );
   }
 
-  /// Returns an [Iterable] containing only the non-null results of applying the given transform function to each element and its index in the original collection.
+  /// Returns an [Iterable] containing only the non-null results of applying the
+  /// given transform function to each element and its index in the original
+  /// collection.
   Iterable<R> mapIndexedNotNull<R>(
     R? Function(int index, E element) transform,
   ) {
@@ -374,7 +420,8 @@ extension KtcIterable<E> on Iterable<E> {
     ).whereNotNull().cast<R>();
   }
 
-  /// Returns an [Iterable] containing only the non-null results of applying the given [transform] function to each element in the original collection.
+  /// Returns an [Iterable] containing only the non-null results of applying the
+  /// given [transform] function to each element in the original collection.
   Iterable<R> mapNotNull<R>(R? Function(E element) transform) {
     final iterator = this.iterator;
 
@@ -384,7 +431,8 @@ extension KtcIterable<E> on Iterable<E> {
     ).whereNotNull().cast<R>();
   }
 
-  /// Returns the first element yielding the largest value of the given [selector] or null if there are no elements.
+  /// Returns the first element yielding the largest value of the given
+  /// [selector] or null if there are no elements.
   E? maxByOrNull<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) return null;
     if (length == 1) return first;
@@ -406,7 +454,8 @@ extension KtcIterable<E> on Iterable<E> {
     return maxElement;
   }
 
-  /// Returns the largest value among all values produced by [selector] function applied to each element in the collection.
+  /// Returns the largest value among all values produced by [selector] function
+  /// applied to each element in the collection.
   R maxOf<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) throw NoSuchElementException();
 
@@ -421,7 +470,9 @@ extension KtcIterable<E> on Iterable<E> {
     return maxValue;
   }
 
-  /// Returns the largest value among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  /// Returns the largest value among all values produced by [selector] function
+  /// applied to each element in the collection or `null` if there are no
+  /// elements.
   R? maxOfOrNull<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) return null;
 
@@ -436,7 +487,9 @@ extension KtcIterable<E> on Iterable<E> {
     return maxValue;
   }
 
-  /// Returns the largest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection.
+  /// Returns the largest value according to the provided [comparator] among all
+  /// values produced by [selector] function applied to each element in the
+  /// collection.
   R maxOfWith<R>(Comparator<R> comparator, R Function(E element) selector) {
     if (isEmpty) throw NoSuchElementException();
 
@@ -451,7 +504,9 @@ extension KtcIterable<E> on Iterable<E> {
     return maxValue;
   }
 
-  /// Returns the largest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  /// Returns the largest value according to the provided [comparator] among all
+  /// values produced by [selector] function applied to each element in the
+  /// collection or `null` if there are no elements.
   R? maxOfWithOrNull<R>(
     Comparator<R> comparator,
     R Function(E element) selector,
@@ -470,7 +525,8 @@ extension KtcIterable<E> on Iterable<E> {
     return maxValue;
   }
 
-  /// Returns the first element having the largest value according to the provided [comparator] or null if there are no elements.
+  /// Returns the first element having the largest value according to the
+  /// provided [comparator] or null if there are no elements.
   E? maxWithOrNull(Comparator<E> comparator) {
     if (isEmpty) return null;
 
@@ -484,7 +540,8 @@ extension KtcIterable<E> on Iterable<E> {
     return maxElement;
   }
 
-  /// Returns the first element yielding the smallest value of the given [selector] function or `null` if there are no elements.
+  /// Returns the first element yielding the smallest value of the given
+  /// [selector] function or `null` if there are no elements.
   E? minByOrNull<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) return null;
     if (length == 1) return first;
@@ -506,7 +563,8 @@ extension KtcIterable<E> on Iterable<E> {
     return minElement;
   }
 
-  /// Returns the smallest value among all values produced by [selector] function applied to each element in the collection.
+  /// Returns the smallest value among all values produced by [selector]
+  /// function applied to each element in the collection.
   R minOf<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) throw NoSuchElementException();
 
@@ -521,7 +579,9 @@ extension KtcIterable<E> on Iterable<E> {
     return minValue;
   }
 
-  /// Returns the smallest value among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  /// Returns the smallest value among all values produced by [selector]
+  /// function applied to each element in the collection or `null` if there are
+  /// no elements.
   R? minOfOrNull<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) return null;
 
@@ -536,7 +596,9 @@ extension KtcIterable<E> on Iterable<E> {
     return minValue;
   }
 
-  /// Returns the smallest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection.
+  /// Returns the smallest value according to the provided [comparator] among
+  /// all values produced by [selector] function applied to each element in the
+  /// collection.
   R minOfWith<R>(Comparator<R> comparator, R Function(E element) selector) {
     if (isEmpty) throw NoSuchElementException();
 
@@ -551,7 +613,9 @@ extension KtcIterable<E> on Iterable<E> {
     return minValue;
   }
 
-  /// Returns the smallest value according to the provided [comparator] among all values produced by [selector] function applied to each element in the collection or `null` if there are no elements.
+  /// Returns the smallest value according to the provided [comparator] among
+  /// all values produced by [selector] function applied to each element in the
+  /// collection or `null` if there are no elements.
   R? minOfWithOrNull<R>(
     Comparator<R> comparator,
     R Function(E element) selector,
@@ -570,7 +634,8 @@ extension KtcIterable<E> on Iterable<E> {
     return minValue;
   }
 
-  /// Returns the first element having the smallest value according to the provided [comparator] or `null` if there are no elements.
+  /// Returns the first element having the smallest value according to the
+  /// provided [comparator] or `null` if there are no elements.
   E? minWithOrNull(Comparator<E> comparator) {
     if (isEmpty) return null;
 
@@ -586,11 +651,13 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns true if the collection has no elements.
   ///
-  /// If [test] is provided it returns true if no elements match the given [test].
+  /// If [test] is provided it returns true if no elements match the given
+  /// [test].
   bool none([bool Function(E element)? test]) =>
       test == null ? isEmpty : !any(test);
 
-  /// Performs the given [action] on each element and returns the collection itself afterwards.
+  /// Performs the given [action] on each element and returns the collection
+  /// itself afterwards.
   Iterable<E> onEach(void Function(E element) action) {
     for (final element in this) {
       action(element);
@@ -599,7 +666,8 @@ extension KtcIterable<E> on Iterable<E> {
     return this;
   }
 
-  /// Performs the given [action] on each element, providing sequential index with the element, and returns the collection itself afterwards.
+  /// Performs the given [action] on each element, providing sequential index
+  /// with the element, and returns the collection itself afterwards.
   Iterable<E> onEachIndexed(void Function(int index, E element) action) {
     var index = 0;
 
@@ -610,7 +678,9 @@ extension KtcIterable<E> on Iterable<E> {
     return this;
   }
 
-  /// Splits the original collection into [Pair] of iterables, where first [Iterable] contains elements for which [test] yielded true, while second [Iterable] contains elements for which [test] yielded false.
+  /// Splits the original collection into [Pair] of iterables, where first
+  /// [Iterable] contains elements for which [test] yielded true, while second
+  /// [Iterable] contains elements for which [test] yielded false.
   Pair<Iterable<E>, Iterable<E>> partition(bool Function(E element) test) =>
       Pair(where(test), whereNot(test));
 
@@ -620,7 +690,8 @@ extension KtcIterable<E> on Iterable<E> {
     return where((element) => test(index++, element));
   }
 
-  /// Returns an [Iterable] containing all elements that are instances of specified type parameter [T].
+  /// Returns an [Iterable] containing all elements that are instances of
+  /// specified type parameter [T].
   Iterable<T> whereIsInstance<T>() =>
       where((element) => element is T).cast<T>();
 
@@ -631,30 +702,36 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns an [Iterable] containing all elements that are not `null`.
   Iterable<E> whereNotNull() => where((element) => element != null);
 
-  /// Returns an [Iterable] containing all elements of the original collection except the elements contained in the [other] collection.
+  /// Returns an [Iterable] containing all elements of the original collection
+  /// except the elements contained in the [other] collection.
   Iterable<E> operator -(Iterable other) => whereNot(other.contains);
 
-  /// Returns an [Iterable] containing all elements of the original collection and then all elements of the [other] collection.
+  /// Returns an [Iterable] containing all elements of the original collection
+  /// and then all elements of the [other] collection.
   Iterable<E> operator +(Iterable other) => Iterable.generate(
         length + other.length,
         (index) =>
             index < length ? elementAt(index) : other.elementAt(index - length),
       );
 
-  /// Returns an [Iterable] that has been removed by the number of [count] from the beginning.
+  /// Returns an [Iterable] that has been removed by the number of [count] from
+  /// the beginning.
   ///
   /// If [count] is negative it `throws` [ArgumentError].
   ///
-  /// It is not in the Kotlin collection library. But I added it because it looks useful.
+  /// It is not in the Kotlin collection library. But I added it because it
+  /// looks useful.
   Iterable<E> operator <<(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
       : skip(count);
 
-  /// Returns an [Iterable] that has been removed by the number of [count] from the end.
+  /// Returns an [Iterable] that has been removed by the number of [count] from
+  /// the end.
   ///
   /// If [count] is negative it `throws` [ArgumentError].
   ///
-  /// It is not in the Kotlin collection library. But I added it because it looks useful.
+  /// It is not in the Kotlin collection library. But I added it because it
+  /// looks useful.
   Iterable<E> operator >>(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
       : take(length - count);
