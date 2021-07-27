@@ -59,20 +59,20 @@ extension KtcIterable<E> on Iterable<E> {
   Map<E, V> associateWith<V>(V Function(E element) valueSelector) =>
       Map.fromIterables(this, map(valueSelector));
 
-  /// Splits this collection into a list of lists each not exceeding the given [size].
+  /// Splits this collection into a [Iterable] of iterables each not exceeding the given [size].
   ///
-  /// The last list in the resulting list may have fewer elements than the given [size].
-  List<List<E>> chunked(int size) => List.generate(
+  /// The last [Iterable] in the resulting [Iterable] may have fewer elements than the given [size].
+  Iterable<Iterable<E>> chunked(int size) => Iterable.generate(
         length % size == 0 ? length ~/ size : length ~/ size + 1,
-        (index) => skip(index * size).take(size).toList(),
+        (index) => skip(index * size).take(size),
       );
 
-  /// Splits this collection into several lists each not exceeding the given [size] and applies the given [transform] function to an each.
-  List<T> chunkedAndTransform<T>(
+  /// Splits this collection into several iterables each not exceeding the given [size] and applies the given [transform] function to an each.
+  Iterable<T> chunkedAndTransform<T>(
     int size,
-    T Function(List<E> chunk) transmform,
+    T Function(Iterable<E> chunk) transmform,
   ) =>
-      chunked(size).map(transmform).toList();
+      chunked(size).map(transmform);
 
   /// Returns the number of elements matching the given [test].
   /// If [test] is not provided it returns the number of elements in the [Iterable].
@@ -614,16 +614,10 @@ extension KtcIterable<E> on Iterable<E> {
   Pair<Iterable<E>, Iterable<E>> partition(bool Function(E element) test) =>
       Pair(where(test), whereNot(test));
 
-  /// Returns a [List] containing only elements matching the given [test].
-  List<E> whereIndexed(bool Function(int index, E element) test) {
-    final list = <E>[];
+  /// Returns a [Iterable] containing only elements matching the given [test].
+  Iterable<E> whereIndexed(bool Function(int index, E element) test) {
     var index = 0;
-
-    for (final element in this) {
-      if (test(index++, element)) list.add(element);
-    }
-
-    return list;
+    return where((element) => test(index++, element));
   }
 
   /// Returns an [Iterable] containing all elements that are instances of specified type parameter [T].
