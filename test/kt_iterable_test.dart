@@ -559,6 +559,13 @@ void main() {
     });
   });
 
+  test('partition', () {
+    final partition = iterable.partition((element) => element.isEven);
+
+    expect(partition.first, [0, 2]);
+    expect(partition.second, [1]);
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(

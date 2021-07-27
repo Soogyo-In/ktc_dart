@@ -610,6 +610,10 @@ extension KtcIterable<E> on Iterable<E> {
     return this;
   }
 
+  /// Splits the original collection into [Pair] of iterables, where first [Iterable] contains elements for which [test] yielded true, while second [Iterable] contains elements for which [test] yielded false.
+  Pair<Iterable<E>, Iterable<E>> partition(bool Function(E element) test) =>
+      Pair(where(test), whereNot(test));
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];
@@ -634,8 +638,7 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<E> whereNotNull() => where((element) => element != null);
 
   /// Returns an [Iterable] containing all elements of the original collection except the elements contained in the [other] collection.
-  Iterable<E> operator -(Iterable other) =>
-      where((element) => !other.contains(element));
+  Iterable<E> operator -(Iterable other) => whereNot(other.contains);
 
   /// Returns an [Iterable] containing all elements of the original collection and then all elements of the [other] collection.
   Iterable<E> operator +(Iterable other) => Iterable.generate(
