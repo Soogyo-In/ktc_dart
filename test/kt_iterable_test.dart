@@ -531,6 +531,14 @@ void main() {
     });
   });
 
+  test('none', () {
+    expect([].none(), true);
+    expect(iterable.none(), false);
+    expect([].none((element) => element == null), true);
+    expect(iterable.none((element) => element.isNegative), true);
+    expect(iterable.none((element) => element.isEven), false);
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(

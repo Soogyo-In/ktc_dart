@@ -584,6 +584,12 @@ extension KtcIterable<E> on Iterable<E> {
     return minElement;
   }
 
+  /// Returns true if the collection has no elements.
+  ///
+  /// If [test] is provided it returns true if no elements match the given [test].
+  bool none([bool Function(E element)? test]) =>
+      test == null ? isEmpty : !any(test);
+
   /// Returns a [List] containing only elements matching the given [test].
   List<E> whereIndexed(bool Function(int index, E element) test) {
     final list = <E>[];
