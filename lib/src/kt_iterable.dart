@@ -40,6 +40,18 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
   }
 }
 
+extension NullableIterator<E> on Iterable<E?> {
+  /// Returns an original collection containing all the non-null elements,
+  /// throwing an [ArgumentError] if there are any null elements.
+  Iterable<E> get requireNoNulls {
+    for (final element in this) {
+      if (element == null) throw ArgumentError.notNull('element');
+    }
+
+    return cast<E>();
+  }
+}
+
 extension KtcIterable<E> on Iterable<E> {
   /// Returns a [Map] containing [MapEntry]s provided by [transform] function
   /// applied to elements of the given collection.
@@ -417,7 +429,7 @@ extension KtcIterable<E> on Iterable<E> {
     return Iterable.generate(
       length,
       (index) => transform(index, (iterator..moveNext()).current),
-    ).whereNotNull().cast<R>();
+    ).whereNotNull().requireNoNulls;
   }
 
   /// Returns an [Iterable] containing only the non-null results of applying the
@@ -428,7 +440,7 @@ extension KtcIterable<E> on Iterable<E> {
     return Iterable.generate(
       length,
       (index) => transform((iterator..moveNext()).current),
-    ).whereNotNull().cast<R>();
+    ).whereNotNull().requireNoNulls;
   }
 
   /// Returns the first element yielding the largest value of the given

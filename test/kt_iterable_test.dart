@@ -160,7 +160,7 @@ void main() {
       expect(iterable.firstNotNullOf((element) => element.toString()), '0');
       expect(
         () => iterable.firstNotNullOf((element) => null),
-        throwsA(TypeMatcher<NoSuchElementException>()),
+        throwsA(isA<NoSuchElementException>()),
       );
     });
 
@@ -377,7 +377,7 @@ void main() {
 
       expect(
         () => <List>[].maxOf(selector),
-        throwsA(TypeMatcher<NoSuchElementException>()),
+        throwsA(isA<NoSuchElementException>()),
       );
       expect(
         [
@@ -413,7 +413,7 @@ void main() {
 
       expect(
         () => <int>[].maxOfWith(comparator, selector),
-        throwsA(TypeMatcher<NoSuchElementException>()),
+        throwsA(isA<NoSuchElementException>()),
       );
       expect([3].maxOfWith(comparator, selector), -3);
       expect(iterable.maxOfWith(comparator, selector), 0);
@@ -471,7 +471,7 @@ void main() {
 
       expect(
         () => <List>[].minOf(selector),
-        throwsA(TypeMatcher<NoSuchElementException>()),
+        throwsA(isA<NoSuchElementException>()),
       );
       expect(
         [
@@ -507,7 +507,7 @@ void main() {
 
       expect(
         () => <int>[].minOfWith(comparator, selector),
-        throwsA(TypeMatcher<NoSuchElementException>()),
+        throwsA(isA<NoSuchElementException>()),
       );
       expect([3].minOfWith(comparator, selector), -3);
       expect(iterable.minOfWith(comparator, selector), -2);
@@ -572,7 +572,7 @@ void main() {
 
       expect(
         () => <int>[].reduceIndexed(combine),
-        throwsA(TypeMatcher<NoSuchElementException>()),
+        throwsA(isA<NoSuchElementException>()),
       );
       expect(iterable.reduceIndexed(combine), 4);
     });
@@ -590,6 +590,14 @@ void main() {
       expect(<int>[].reduceOrNull(combine), null);
       expect(iterable.reduceOrNull(combine), 3);
     });
+  });
+
+  test('requireNoNulls', () {
+    expect(<int?>[0, 1, 2].requireNoNulls, [0, 1, 2]);
+    expect(
+      () => <int?>[0, null, 2].requireNoNulls,
+      throwsA(isArgumentError),
+    );
   });
 
   group('Where', () {
@@ -674,7 +682,7 @@ void main() {
     });
 
     test('shift left', () {
-      expect(() => iterable << -1, throwsA(TypeMatcher<ArgumentError>()));
+      expect(() => iterable << -1, throwsA(isArgumentError));
       expect(iterable << 0, [0, 1, 2]);
       expect(iterable << 1, [1, 2]);
       expect(iterable << 2, [2]);
@@ -683,12 +691,12 @@ void main() {
     });
 
     test('shift right', () {
-      expect(() => iterable >> -1, throwsA(TypeMatcher<ArgumentError>()));
+      expect(() => iterable >> -1, throwsA(isArgumentError));
       expect(iterable >> 0, [0, 1, 2]);
       expect(iterable >> 1, [0, 1]);
       expect(iterable >> 2, [0]);
       expect(iterable >> 3, []);
-      expect(() => iterable >> 4, throwsA(TypeMatcher<RangeError>()));
+      expect(() => iterable >> 4, throwsA(isRangeError));
     });
   });
 }
