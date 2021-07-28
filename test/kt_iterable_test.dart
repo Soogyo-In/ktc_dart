@@ -566,6 +566,32 @@ void main() {
     expect(partition.second, [1]);
   });
 
+  group('Reduce', () {
+    test('reduceIndexed', () {
+      int combine(int index, int value, int element) => index + value + element;
+
+      expect(
+        () => <int>[].reduceIndexed(combine),
+        throwsA(TypeMatcher<NoSuchElementException>()),
+      );
+      expect(iterable.reduceIndexed(combine), 4);
+    });
+
+    test('reduceIndexedOrNull', () {
+      int combine(int index, int value, int element) => index + value + element;
+
+      expect(<int>[].reduceIndexedOrNull(combine), null);
+      expect(iterable.reduceIndexedOrNull(combine), 4);
+    });
+
+    test('reduceOrNull', () {
+      int combine(int value, int element) => value + element;
+
+      expect(<int>[].reduceOrNull(combine), null);
+      expect(iterable.reduceOrNull(combine), 3);
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(

@@ -684,6 +684,55 @@ extension KtcIterable<E> on Iterable<E> {
   Pair<Iterable<E>, Iterable<E>> partition(bool Function(E element) test) =>
       Pair(where(test), whereNot(test));
 
+  /// Accumulates value starting with the first element and applying [combine]
+  /// function from left to right to current accumulator value and each element
+  /// with its index in the original collection.
+  E reduceIndexed(E Function(int index, E value, E element) combine) {
+    if (isEmpty) throw NoSuchElementException();
+
+    final iterator = this.iterator..moveNext();
+    int index = 0;
+    E value = iterator.current;
+
+    while (iterator.moveNext()) {
+      value = combine(index++, value, iterator.current);
+    }
+
+    return value;
+  }
+
+  /// Accumulates value starting with the first element and applying [combine]
+  /// function from left to right to current accumulator value and each element
+  /// with its index in the original collection.
+  E? reduceIndexedOrNull(E Function(int index, E value, E element) combine) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    int index = 0;
+    E value = iterator.current;
+
+    while (iterator.moveNext()) {
+      value = combine(index++, value, iterator.current);
+    }
+
+    return value;
+  }
+
+  /// Accumulates value starting with the first element and applying [combine]
+  /// function from left to right to current accumulator value and each element.
+  E? reduceOrNull(E Function(E value, E element) combine) {
+    if (isEmpty) return null;
+
+    final iterator = this.iterator..moveNext();
+    E value = iterator.current;
+
+    while (iterator.moveNext()) {
+      value = combine(value, iterator.current);
+    }
+
+    return value;
+  }
+
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {
     var index = 0;
