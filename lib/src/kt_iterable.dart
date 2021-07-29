@@ -41,6 +41,10 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 }
 
 extension NullableIterator<E> on Iterable<E?> {
+  /// Returns an [Iterable] containing all elements that are not `null`.
+  Iterable<E> whereNotNull() =>
+      whereNot((element) => element == null).cast<E>();
+
   /// Returns an original collection containing all the non-null elements,
   /// throwing an [ArgumentError] if there are any null elements.
   Iterable<E> get requireNoNulls {
@@ -84,7 +88,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// The last [Iterable] in the resulting [Iterable] may have fewer elements
   /// than the given [size].
   Iterable<Iterable<E>> chunked(int size) => Iterable.generate(
-        length % size == 0 ? length ~/ size : length ~/ size + 1,
+        length.isEven ? length ~/ size : length ~/ size + 1,
         (index) => skip(index * size).take(size),
       );
 
@@ -424,24 +428,15 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<R> mapIndexedNotNull<R>(
     R? Function(int index, E element) transform,
   ) {
-    final iterator = this.iterator;
+    var index = 0;
 
-    return Iterable.generate(
-      length,
-      (index) => transform(index, (iterator..moveNext()).current),
-    ).whereNotNull().requireNoNulls;
+    return map((element) => transform(index++, element)).whereNotNull();
   }
 
   /// Returns an [Iterable] containing only the non-null results of applying the
   /// given [transform] function to each element in the original collection.
-  Iterable<R> mapNotNull<R>(R? Function(E element) transform) {
-    final iterator = this.iterator;
-
-    return Iterable.generate(
-      length,
-      (index) => transform((iterator..moveNext()).current),
-    ).whereNotNull().requireNoNulls;
-  }
+  Iterable<R> mapNotNull<R>(R? Function(E element) transform) =>
+      map(transform).whereNotNull();
 
   /// Returns the first element yielding the largest value of the given
   /// [selector] or null if there are no elements.
@@ -691,10 +686,18 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Splits the original collection into [Pair] of iterables, where first
-  /// [Iterable] contains elements for which [test] yielded true, while second
-  /// [Iterable] contains elements for which [test] yielded false.
-  Pair<Iterable<E>, Iterable<E>> partition(bool Function(E element) test) =>
-      Pair(where(test), whereNot(test));
+  /// [List] contains elements for which [test] yielded true, while second
+  /// [List] contains elements for which [test] yielded false.
+  Pair<List<E>, List<E>> partition(bool Function(E element) test) {
+    final pass = <E>[];
+    final unpass = <E>[];
+
+    for (final element in this) {
+      test(element) ? pass.add(element) : unpass.add(element);
+    }
+
+    return Pair(pass, unpass);
+  }
 
   /// Accumulates value starting with the first element and applying [combine]
   /// function from left to right to current accumulator value and each element
@@ -745,6 +748,9 @@ extension KtcIterable<E> on Iterable<E> {
     return value;
   }
 
+  /// Returns a [Iterable] with elements in reversed order.
+  Iterable<E> get reversed => toList().reversed;
+
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {
     var index = 0;
@@ -760,20 +766,13 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<E> whereNot(bool Function(E element) test) =>
       where((element) => !test(element));
 
-  /// Returns an [Iterable] containing all elements that are not `null`.
-  Iterable<E> whereNotNull() => where((element) => element != null);
-
   /// Returns an [Iterable] containing all elements of the original collection
   /// except the elements contained in the [other] collection.
-  Iterable<E> operator -(Iterable other) => whereNot(other.contains);
+  Iterable<E> operator -(Iterable<E> other) => whereNot(other.contains);
 
   /// Returns an [Iterable] containing all elements of the original collection
   /// and then all elements of the [other] collection.
-  Iterable<E> operator +(Iterable other) => Iterable.generate(
-        length + other.length,
-        (index) =>
-            index < length ? elementAt(index) : other.elementAt(index - length),
-      );
+  Iterable<E> operator +(Iterable<E> other) => followedBy(other);
 
   /// Returns an [Iterable] that has been removed by the number of [count] from
   /// the beginning.
