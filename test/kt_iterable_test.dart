@@ -680,6 +680,16 @@ void main() {
     });
   });
 
+  group('Sum', () {
+    test('sum', () {
+      expect([0, 2.0, -1].sum, 1.0);
+    });
+
+    test('sumOf', () {
+      expect([0, 2.0, -1].sumOf((element) => -element), -1.0);
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(

@@ -4,6 +4,14 @@ extension NumIterable on Iterable<num> {
   /// Returns an average value of elements in the collection.
   double get average =>
       cast<num>().reduce((value, element) => value + element) / length;
+
+  /// Returns the sum of all elements in the collection.
+  num get sum => reduce((value, element) => value + element);
+
+  /// Returns the sum of all values produced by [selector] function applied to
+  /// each element in the collection.
+  num sumOf(num Function(num element) selector) =>
+      fold(0, (value, element) => value + selector(element));
 }
 
 extension DeepIterable<E> on Iterable<Iterable<E>> {
