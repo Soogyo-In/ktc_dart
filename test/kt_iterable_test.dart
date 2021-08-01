@@ -176,13 +176,8 @@ void main() {
     });
 
     test('firstOrNull', () {
-      expect([].firstOrNull((element) => element.isOdd), null);
-      expect(iterable.firstOrNull(), 0);
-      expect(iterable.firstOrNull((element) => element.isOdd), 1);
-      expect(
-        iterable.firstOrNull((element) => element.isNegative),
-        null,
-      );
+      expect([].firstOrNull, null);
+      expect(iterable.firstOrNull, 0);
     });
 
     test('firstWhereOrNull', () {
@@ -334,10 +329,8 @@ void main() {
 
   group('Last', () {
     test('lastOrNull', () {
-      expect([].lastOrNull(), null);
-      expect(iterable.lastOrNull(), 2);
-      expect(iterable.lastOrNull((element) => element.isOdd), 1);
-      expect(iterable.lastOrNull((element) => element.isNegative), null);
+      expect([].lastOrNull, null);
+      expect(iterable.lastOrNull, 2);
     });
 
     test('lastWhereOrNull', () {
@@ -649,9 +642,9 @@ void main() {
 
   group('Single', () {
     test('singleOrNull', () {
-      expect(<int>[].singleOrNull(), null);
-      expect([0].singleOrNull(), 0);
-      expect([0, 1].singleOrNull(), null);
+      expect(<int>[].singleOrNull, null);
+      expect([0].singleOrNull, 0);
+      expect([0, 1].singleOrNull, null);
     });
 
     test('singleWhrerOrNull', () {

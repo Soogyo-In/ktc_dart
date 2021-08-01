@@ -190,13 +190,7 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns the first element, or `null` if the collection is empty.
-  /// If [test] is provided it returns the first element matching the given
-  /// [test], or `null` if element was not found.
-  E? firstOrNull([bool Function(E element)? test]) => isEmpty
-      ? null
-      : test == null
-          ? first
-          : firstWhereOrNull(test);
+  E? get firstOrNull => isEmpty ? null : first;
 
   /// Returns the first element matching the given [test], or `null` if no such
   /// element was found.
@@ -379,13 +373,7 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns the last element, or `null` if the collection is empty.
-  /// If [test] is provided it returns the last element matching the given
-  /// [test], or `null` if no such element was found.
-  E? lastOrNull([bool Function(E element)? test]) => isEmpty
-      ? null
-      : test == null
-          ? last
-          : lastWhereOrNull(test);
+  E? get lastOrNull => isEmpty ? null : last;
 
   /// Returns the last element matching the given [test], or `null` if no such
   /// element was found.
@@ -806,7 +794,7 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns single element, or `null` if the collection is empty or has more
   /// than one element.
-  E? singleOrNull() => length != 1 ? null : single;
+  E? get singleOrNull => length != 1 ? null : single;
 
   /// Returns the single element matching the given [test], or `null` if element
   /// was not found or more than one element was found.
