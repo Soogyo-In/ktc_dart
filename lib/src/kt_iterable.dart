@@ -87,10 +87,14 @@ extension KtcIterable<E> on Iterable<E> {
   ///
   /// The last [Iterable] in the resulting [Iterable] may have fewer elements
   /// than the given [size].
-  Iterable<Iterable<E>> chunked(int size) => Iterable.generate(
-        length.isEven ? length ~/ size : length ~/ size + 1,
-        (index) => skip(index * size).take(size),
-      );
+  Iterable<Iterable<E>> chunked(int size) {
+    final length = this.length;
+
+    return Iterable.generate(
+      length.isEven ? length ~/ size : length ~/ size + 1,
+      (index) => skip(index * size).take(size),
+    );
+  }
 
   /// Splits this collection into several iterables each not exceeding the given
   /// [size] and applies the given [transform] function to an each.
@@ -124,33 +128,29 @@ extension KtcIterable<E> on Iterable<E> {
   /// [defaultValue] function if the [index] is out of bounds of this
   /// collection.
   E elementAtOrElse(int index, E Function(int index) defaultValue) {
-    if (length <= index || index < 0) return defaultValue(index);
-
     final iterator = this.iterator;
     var elementIndex = 0;
 
     while (iterator.moveNext()) {
-      if (index == elementIndex) break;
+      if (index == elementIndex) return iterator.current;
       elementIndex++;
     }
 
-    return iterator.current;
+    return defaultValue(index);
   }
 
   /// Returns an element at the given [index] or `null` if the [index] is out of
   /// bounds of this collection.
   E? elementAtOrNull(int index) {
-    if (length <= index || index < 0) return null;
-
     final iterator = this.iterator;
     var elementIndex = 0;
 
     while (iterator.moveNext()) {
-      if (index == elementIndex) break;
+      if (index == elementIndex) return iterator.current;
       elementIndex++;
     }
 
-    return iterator.current;
+    return null;
   }
 
   /// Returns a single [Iterable] of all elements yielded from results of
@@ -420,7 +420,6 @@ extension KtcIterable<E> on Iterable<E> {
   /// [selector] or null if there are no elements.
   E? maxByOrNull<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) return null;
-    if (length == 1) return first;
 
     final iterator = this.iterator..moveNext();
     E maxElement = iterator.current;
@@ -529,7 +528,6 @@ extension KtcIterable<E> on Iterable<E> {
   /// [selector] function or `null` if there are no elements.
   E? minByOrNull<R extends Comparable>(R Function(E element) selector) {
     if (isEmpty) return null;
-    if (length == 1) return first;
 
     final iterator = this.iterator..moveNext();
     E minElement = iterator.current;
@@ -719,10 +717,14 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns a [Iterable] with elements in reversed order.
-  Iterable<E> get reversed => Iterable.generate(
-        length,
-        (index) => elementAt(length - index - 1),
-      );
+  Iterable<E> get reversed {
+    final length = this.length;
+
+    return Iterable.generate(
+      length,
+      (index) => elementAt(length - index - 1),
+    );
+  }
 
   /// Returns a [Iterable] containing successive accumulation values generated
   /// by applying [combine] function from left to right to each element and
@@ -794,7 +796,18 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns single element, or `null` if the collection is empty or has more
   /// than one element.
-  E? get singleOrNull => length != 1 ? null : single;
+  E? get singleOrNull {
+    var found = false;
+    E? single;
+
+    for (final element in this) {
+      if (found) return null;
+      single = element;
+      found = true;
+    }
+
+    return single;
+  }
 
   /// Returns the single element matching the given [test], or `null` if element
   /// was not found or more than one element was found.
