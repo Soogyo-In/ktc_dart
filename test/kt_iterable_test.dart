@@ -275,6 +275,7 @@ void main() {
     expect(iterable.intersect([2, 3]), <int>{2});
     expect(iterable.intersect([3, 4]), <int>{});
     expect(iterable.intersect([1, 1]), <int>{1});
+    expect([1, 2, 2, 3].intersect([1, 2]), <int>{1, 2});
   });
 
   test('joinToString', () {

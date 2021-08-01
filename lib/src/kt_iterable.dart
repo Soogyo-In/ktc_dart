@@ -327,7 +327,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a [Iterable] containing all elements that are contained by both this
   /// collection and the specified collection.
   Iterable<E> intersect(Iterable<E> other) =>
-      where((element) => other.contains(element));
+      distinct.where((element) => other.contains(element));
 
   /// Appends the [String] from all the elements separated using [separator] and
   /// using the given [prefix] and [postfix] if supplied.
