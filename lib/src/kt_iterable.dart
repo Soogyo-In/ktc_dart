@@ -800,6 +800,31 @@ extension KtcIterable<E> on Iterable<E> {
     });
   }
 
+  /// Returns a new [List] with the elements of this list randomly shuffled
+  /// using the specified [random] instance as the source of randomness.
+  List<E> shuffled([Random? random]) => toList()..shuffle();
+
+  /// Returns single element, or `null` if the collection is empty or has more
+  /// than one element.
+  E? singleOrNull() => length != 1 ? null : single;
+
+  /// Returns the single element matching the given [test], or `null` if element
+  /// was not found or more than one element was found.
+  E? singleWhereOrNull(bool Function(E element) test) {
+    var found = false;
+    E? single;
+
+    for (final element in this) {
+      if (test(element)) {
+        if (found) return null;
+        single = element;
+        found = true;
+      }
+    }
+
+    return single;
+  }
+
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {
     var index = 0;

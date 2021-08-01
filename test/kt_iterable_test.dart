@@ -647,6 +647,23 @@ void main() {
     expect(iterable.reversed, [2, 1, 0]);
   });
 
+  group('Single', () {
+    test('singleOrNull', () {
+      expect(<int>[].singleOrNull(), null);
+      expect([0].singleOrNull(), 0);
+      expect([0, 1].singleOrNull(), null);
+    });
+
+    test('singleWhrerOrNull', () {
+      bool test(int element) => element == 1;
+
+      expect(<int>[].singleWhereOrNull(test), null);
+      expect([0, 2].singleWhereOrNull(test), null);
+      expect([0, 1, 2].singleWhereOrNull(test), 1);
+      expect([0, 1, 2, 1].singleWhereOrNull(test), null);
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
