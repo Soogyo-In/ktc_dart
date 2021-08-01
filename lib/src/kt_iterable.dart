@@ -38,6 +38,14 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 
     return minElement;
   }
+
+  /// Returns a [List] of all elements sorted according to their natural sort
+  /// order.
+  List<E> get sorted => toList()..sort();
+
+  /// Returns a [List] of all elements sorted descending according to their
+  /// natural sort order.
+  List<E> get sortedDescending => toList()..sort((a, b) => b.compareTo(a));
 }
 
 extension NullableIterator<E> on Iterable<E?> {
@@ -305,8 +313,8 @@ extension KtcIterable<E> on Iterable<E> {
     return lastIndex;
   }
 
-  /// Returns a [Iterable] containing all elements that are contained by both this
-  /// collection and the specified collection.
+  /// Returns a [Iterable] containing all elements that are contained by both
+  /// this collection and the specified collection.
   Iterable<E> intersect(Iterable<E> other) =>
       distinct.where((element) => other.contains(element));
 
@@ -826,6 +834,30 @@ extension KtcIterable<E> on Iterable<E> {
     return single;
   }
 
+  /// Returns a [List] of all elements sorted according to natural sort order of
+  /// the value returned by specified [selector] function.
+  List<E> sortedBy<R extends Comparable>(R Function(E element) selector) =>
+      associateBy(selector)
+          .entries
+          .sortedWith((a, b) => a.key.compareTo(b.key))
+          .map((element) => element.value)
+          .toList();
+
+  /// Returns a [List] of all elements sorted descending according to natural
+  /// sort order of the value returned by specified [selector] function.
+  List<E> sortedByDescending<R extends Comparable>(
+    R Function(E element) selector,
+  ) =>
+      associateBy(selector)
+          .entries
+          .sortedWith((a, b) => b.key.compareTo(a.key))
+          .map((element) => element.value)
+          .toList();
+
+  /// Returns a [List] of all elements sorted according to the specified
+  /// [comparator].
+  List<E> sortedWith(Comparator<E> comparator) => toList()..sort(comparator);
+
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {
     var index = 0;
@@ -837,7 +869,8 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<T> whereIsInstance<T>() =>
       where((element) => element is T).cast<T>();
 
-  /// Returns an [Iterable] containing all elements not matching the given [test].
+  /// Returns an [Iterable] containing all elements not matching the given
+  /// [test].
   Iterable<E> whereNot(bool Function(E element) test) =>
       where((element) => !test(element));
 

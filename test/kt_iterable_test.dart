@@ -657,6 +657,29 @@ void main() {
     });
   });
 
+  group('Sort', () {
+    test('sorted', () {
+      expect([2, 1, 0].sorted, [0, 1, 2]);
+    });
+
+    test('sortedBy', () {
+      expect([0, 1, 2].sortedBy((element) => -element), [2, 1, 0]);
+    });
+
+    test('sortedByDescending', () {
+      expect([0, 1, 2].sortedByDescending((element) => -element), [0, 1, 2]);
+    });
+
+    test('sortedDescending', () {
+      expect([0, 1, 2].sortedDescending, [2, 1, 0]);
+    });
+
+    test('sortedWith', () {
+      expect([2, 1, 0].sortedWith((a, b) => a.compareTo(b)), [0, 1, 2]);
+      expect([0, 1, 2].sortedWith((a, b) => b.compareTo(a)), [2, 1, 0]);
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
