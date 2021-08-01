@@ -575,14 +575,14 @@ void main() {
         () => <int>[].reduceIndexed(combine),
         throwsA(isA<NoSuchElementException>()),
       );
-      expect(iterable.reduceIndexed(combine), 4);
+      expect(iterable.reduceIndexed(combine), 6);
     });
 
     test('reduceIndexedOrNull', () {
       int combine(int index, int value, int element) => index + value + element;
 
       expect(<int>[].reduceIndexedOrNull(combine), null);
-      expect(iterable.reduceIndexedOrNull(combine), 4);
+      expect(iterable.reduceIndexedOrNull(combine), 6);
     });
 
     test('reduceOrNull', () {

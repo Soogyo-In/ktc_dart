@@ -688,7 +688,7 @@ extension KtcIterable<E> on Iterable<E> {
     if (isEmpty) throw NoSuchElementException();
 
     final iterator = this.iterator..moveNext();
-    int index = 0;
+    int index = 1;
     E value = iterator.current;
 
     while (iterator.moveNext()) {
@@ -705,7 +705,7 @@ extension KtcIterable<E> on Iterable<E> {
     if (isEmpty) return null;
 
     final iterator = this.iterator..moveNext();
-    int index = 0;
+    int index = 1;
     E value = iterator.current;
 
     while (iterator.moveNext()) {
