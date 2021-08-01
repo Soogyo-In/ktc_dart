@@ -106,23 +106,18 @@ extension KtcIterable<E> on Iterable<E> {
   int count([bool Function(E element)? test]) =>
       test == null ? length : where(test).length;
 
-  /// Returns a [List] containing only distinct elements from the given
+  /// Returns a [Iterable] containing only distinct elements from the given
   /// collection.
-  List<E> get distinct => toSet().toList();
+  Iterable<E> get distinct {
+    final set = <E>{};
+    return where((element) => set.add(element));
+  }
 
-  /// Returns a [List] containing only elements from the given collection having
-  /// distinct keys returned by the given [selector] function.
-  List<E> distinctBy<K>(K Function(E element) selector) {
+  /// Returns a [Iterable] containing only elements from the given collection
+  /// having distinct keys returned by the given [selector] function.
+  Iterable<E> distinctBy<K>(K Function(E element) selector) {
     final set = <K>{};
-    final list = <E>[];
-
-    for (final element in this) {
-      final key = selector(element);
-
-      if (set.add(key)) list.add(element);
-    }
-
-    return list;
+    return where((element) => set.add(selector(element)));
   }
 
   /// Returns an element at the given [index] or the result of calling the
@@ -251,20 +246,16 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Groups elements of the original collection by the key returned by the
   /// given [keySelector] function applied to each element and returns a [Map]
-  /// where each group key is associated with a [List] of corresponding
+  /// where each group key is associated with a [Iterable] of corresponding
   /// elements.
-  Map<K, List<E>> groupBy<K>(K Function(E element) keySelector) {
-    final groups = <K, List<E>>{};
+  Map<K, Iterable<E>> groupBy<K>(K Function(E element) keySelector) {
+    final groups = <K, Iterable<E>>{};
 
     for (final element in this) {
       final key = keySelector(element);
-      final group = groups[key];
 
-      if (group == null) {
-        groups[key] = [element];
-      } else {
-        group.add(element);
-      }
+      groups.putIfAbsent(
+          key, () => where((element) => keySelector(element) == key));
     }
 
     return groups;
@@ -273,23 +264,21 @@ extension KtcIterable<E> on Iterable<E> {
   /// Groups values returned by the [valueTransform] function applied to each
   /// element of the original collection by the key returned by the given
   /// [keySelector] function applied to the element and returns a [Map] where
-  /// each group key is associated with a [List] of corresponding values.
-  Map<K, List<V>> groupAndTransformBy<K, V>(
+  /// each group key is associated with a [Iterable] of corresponding values.
+  Map<K, Iterable<V>> groupAndTransformBy<K, V>(
     K Function(E element) keySelector,
     V Function(E element) valueTransform,
   ) {
-    final groups = <K, List<V>>{};
+    final groups = <K, Iterable<V>>{};
 
     for (final element in this) {
       final key = keySelector(element);
-      final value = valueTransform(element);
-      final group = groups[key];
 
-      if (group == null) {
-        groups[key] = [value];
-      } else {
-        group.add(value);
-      }
+      groups.putIfAbsent(
+        key,
+        () => where((element) => keySelector(element) == key)
+            .map((element) => valueTransform(element)),
+      );
     }
 
     return groups;
@@ -335,9 +324,10 @@ extension KtcIterable<E> on Iterable<E> {
     return lastIndex;
   }
 
-  /// Returns a [Set] containing all elements that are contained by both this
+  /// Returns a [Iterable] containing all elements that are contained by both this
   /// collection and the specified collection.
-  Set<E> intersect(Iterable<E> other) => toSet()..retainAll(other);
+  Iterable<E> intersect(Iterable<E> other) =>
+      where((element) => other.contains(element));
 
   /// Appends the [String] from all the elements separated using [separator] and
   /// using the given [prefix] and [postfix] if supplied.
@@ -686,18 +676,10 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Splits the original collection into [Pair] of iterables, where first
-  /// [List] contains elements for which [test] yielded true, while second
-  /// [List] contains elements for which [test] yielded false.
-  Pair<List<E>, List<E>> partition(bool Function(E element) test) {
-    final pass = <E>[];
-    final unpass = <E>[];
-
-    for (final element in this) {
-      test(element) ? pass.add(element) : unpass.add(element);
-    }
-
-    return Pair(pass, unpass);
-  }
+  /// [Iterable] contains elements for which [test] yielded true, while second
+  /// [Iterable] contains elements for which [test] yielded false.
+  Pair<Iterable<E>, Iterable<E>> partition(bool Function(E element) test) =>
+      Pair(where(test), whereNot(test));
 
   /// Accumulates value starting with the first element and applying [combine]
   /// function from left to right to current accumulator value and each element
@@ -749,7 +731,10 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns a [Iterable] with elements in reversed order.
-  Iterable<E> get reversed => toList().reversed;
+  Iterable<E> get reversed => Iterable.generate(
+        length,
+        (index) => elementAt(length - index - 1),
+      );
 
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {

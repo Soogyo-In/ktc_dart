@@ -319,7 +319,7 @@ void main() {
     expect(iterable.lastOrNull((element) => element.isNegative), null);
   });
 
-  group('map', () {
+  group('Map', () {
     test('mapIndexed', () {
       final result = iterable.mapIndexed((index, element) => index + element);
 
@@ -600,6 +600,10 @@ void main() {
     );
   });
 
+  test('reversed', () {
+    expect(iterable.reversed, [2, 1, 0]);
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(
@@ -628,7 +632,7 @@ void main() {
     });
   });
 
-  group('operator', () {
+  group('Operator', () {
     test('minus', () {
       expect([] - [1], []);
       expect([1] - [], [1]);
