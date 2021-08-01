@@ -196,11 +196,11 @@ extension KtcIterable<E> on Iterable<E> {
       ? null
       : test == null
           ? first
-          : find(test);
+          : firstWhereOrNull(test);
 
   /// Returns the first element matching the given [test], or `null` if no such
   /// element was found.
-  E? find(bool Function(E element) test) {
+  E? firstWhereOrNull(bool Function(E element) test) {
     final iterator = this.iterator;
 
     while (iterator.moveNext()) {
@@ -208,19 +208,6 @@ extension KtcIterable<E> on Iterable<E> {
     }
 
     return null;
-  }
-
-  /// Returns the last element matching the given [test], or `null` if no such
-  /// element was found.
-  E? findLast(bool Function(E element) test) {
-    final iterator = this.iterator;
-    E? element;
-
-    while (iterator.moveNext()) {
-      if (test(iterator.current)) element = iterator.current;
-    }
-
-    return element;
   }
 
   /// Accumulates value starting with [initialValue] and applying operation from
@@ -398,7 +385,20 @@ extension KtcIterable<E> on Iterable<E> {
       ? null
       : test == null
           ? last
-          : findLast(test);
+          : lastWhereOrNull(test);
+
+  /// Returns the last element matching the given [test], or `null` if no such
+  /// element was found.
+  E? lastWhereOrNull(bool Function(E element) test) {
+    final iterator = this.iterator;
+    E? element;
+
+    while (iterator.moveNext()) {
+      if (test(iterator.current)) element = iterator.current;
+    }
+
+    return element;
+  }
 
   /// Returns an [Iterable] containing the results of applying the given
   /// [transform] function to each element and its index in the original

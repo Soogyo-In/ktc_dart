@@ -184,17 +184,11 @@ void main() {
         null,
       );
     });
-  });
 
-  group('Find', () {
-    test('find', () {
-      expect(iterable.find((element) => element.isEven), 0);
-      expect(iterable.find((element) => element.isNegative), null);
-    });
-
-    test('findLast', () {
-      expect(iterable.findLast((element) => element.isEven), 2);
-      expect(iterable.findLast((element) => element.isNegative), null);
+    test('firstWhereOrNull', () {
+      expect([].firstWhereOrNull((element) => element.isEven), null);
+      expect(iterable.firstWhereOrNull((element) => element.isEven), 0);
+      expect(iterable.firstWhereOrNull((element) => element.isNegative), null);
     });
   });
 
@@ -338,11 +332,19 @@ void main() {
     );
   });
 
-  test('lastOrNull', () {
-    expect([].lastOrNull(), null);
-    expect(iterable.lastOrNull(), 2);
-    expect(iterable.lastOrNull((element) => element.isOdd), 1);
-    expect(iterable.lastOrNull((element) => element.isNegative), null);
+  group('Last', () {
+    test('lastOrNull', () {
+      expect([].lastOrNull(), null);
+      expect(iterable.lastOrNull(), 2);
+      expect(iterable.lastOrNull((element) => element.isOdd), 1);
+      expect(iterable.lastOrNull((element) => element.isNegative), null);
+    });
+
+    test('lastWhereOrNull', () {
+      expect([].lastWhereOrNull((element) => element.isEven), null);
+      expect(iterable.lastWhereOrNull((element) => element.isEven), 2);
+      expect(iterable.lastWhereOrNull((element) => element.isNegative), null);
+    });
   });
 
   group('Map', () {
