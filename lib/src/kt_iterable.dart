@@ -736,6 +736,70 @@ extension KtcIterable<E> on Iterable<E> {
         (index) => elementAt(length - index - 1),
       );
 
+  /// Returns a [Iterable] containing successive accumulation values generated
+  /// by applying [combine] function from left to right to each element and
+  /// current accumulator value that starts with [initialValue].
+  Iterable<R> runningFold<R>(
+    R initialValue,
+    R Function(R previousValue, E element) combine,
+  ) {
+    var previousValue = initialValue;
+
+    return [initialValue].followedBy(map((element) {
+      previousValue = combine(previousValue, element);
+      return previousValue;
+    }));
+  }
+
+  /// Returns a [Iterable] containing successive accumulation values generated
+  /// by applying [combine] function from left to right to each element and
+  /// current accumulator value that starts with [initialValue].
+  Iterable<R> runningFoldIndexed<R>(
+    R initialValue,
+    R Function(int index, R previousValue, E element) combine,
+  ) {
+    var previousValue = initialValue;
+    var index = 0;
+
+    return [initialValue].followedBy(map((element) {
+      previousValue = combine(index++, previousValue, element);
+      return previousValue;
+    }));
+  }
+
+  /// Returns a [Iterable] containing successive accumulation values generated
+  /// by applying [combine] function from left to right to each element and
+  /// current accumulator value that starts with the first element of this
+  /// collection.
+  Iterable<E> runningReduce(E Function(E value, E element) combine) {
+    if (isEmpty) return Iterable.empty();
+
+    E value = first;
+
+    return skip(1).map((element) {
+      value = combine(value, element);
+      return value;
+    });
+  }
+
+  /// Returns a [Iterable] containing successive accumulation values generated
+  /// by applying [combine] function from left to right to each element, its
+  /// index in the original collection and current accumulator value that starts
+  /// with the first element of this collection.
+  Iterable<E> runningReduceIndexed(
+    E Function(int index, E value, E element) combine,
+  ) {
+    if (isEmpty) return Iterable.empty();
+
+    var index = 1;
+    var value = first;
+
+    return skip(1).map((element) {
+      value = combine(index++, value, element);
+      return value;
+    });
+  }
+
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {
     var index = 0;

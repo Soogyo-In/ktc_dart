@@ -198,14 +198,39 @@ void main() {
     });
   });
 
-  test('foldIndexed', () {
-    expect(
-      iterable.foldIndexed<int>(
-        0,
-        (index, previousValue, element) => index + previousValue + element,
-      ),
-      6,
-    );
+  group('Fold', () {
+    test('foldIndexed', () {
+      expect(
+        iterable.foldIndexed<int>(
+          0,
+          (index, previousValue, element) => index + previousValue + element,
+        ),
+        6,
+      );
+    });
+
+    test('runningFold', () {
+      final initialValue = 'start';
+      String combine(previousValue, element) => '$previousValue$element';
+
+      expect([].runningFold(initialValue, combine), ['start']);
+      expect(
+        iterable.runningFold(initialValue, combine),
+        ['start', 'start0', 'start01', 'start012'],
+      );
+    });
+
+    test('runningFoldIndexed', () {
+      final initialValue = 'start';
+      String combine(index, previousValue, element) =>
+          '$previousValue$element$index';
+
+      expect([].runningFoldIndexed(initialValue, combine), ['start']);
+      expect(
+        iterable.runningFoldIndexed(initialValue, combine),
+        ['start', 'start00', 'start0011', 'start001122'],
+      );
+    });
   });
 
   test('forEachIndexed', () {
@@ -590,6 +615,21 @@ void main() {
 
       expect(<int>[].reduceOrNull(combine), null);
       expect(iterable.reduceOrNull(combine), 3);
+    });
+
+    test('runningReduce', () {
+      int combine(previousValue, element) => previousValue + element;
+
+      expect([].runningReduce(combine), []);
+      expect(iterable.runningReduce(combine), [1, 3]);
+    });
+
+    test('runningReduceIndexed', () {
+      int combine(index, previousValue, element) =>
+          previousValue + element + index;
+
+      expect([].runningReduceIndexed(combine), []);
+      expect(iterable.runningReduceIndexed(combine), [2, 6]);
     });
   });
 
