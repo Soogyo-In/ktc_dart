@@ -690,6 +690,164 @@ void main() {
     });
   });
 
+  test('union', () {
+    expect([].union([1]), [1]);
+    expect([1].union([1]), [1]);
+    expect([1].union([1, 2]), [1, 2]);
+    expect([1, 2].union([2, 3]), [1, 2, 3]);
+    expect([1, 2].union([3, 4]), [1, 2, 3, 4]);
+    expect([1, 2, 2].union([]), [1, 2]);
+    expect([1, 4, 2].union([3, 2]), [1, 4, 2, 3]);
+  });
+
+  test('unzip', () {
+    final unzip = [
+      Pair(0, -0),
+      Pair(1, -1),
+      Pair(2, -2),
+    ].unzip();
+
+    expect(
+      unzip.first,
+      Iterable<int>.generate(3),
+    );
+    expect(
+      unzip.second,
+      Iterable<int>.generate(3, (index) => -index),
+    );
+  });
+
+  group('Windowed', () {
+    test('windowed', () {
+      final iterable = Iterable.generate(10);
+
+      expect(
+        () => iterable.windowed(size: -1, step: -1),
+        throwsArgumentError,
+      );
+      expect(
+        () => iterable.windowed(size: 0, step: -1),
+        throwsArgumentError,
+      );
+      expect(
+        () => iterable.windowed(size: 0, step: 0),
+        throwsArgumentError,
+      );
+      expect(
+        () => iterable.windowed(size: 1, step: 0),
+        throwsArgumentError,
+      );
+      expect(
+        iterable.windowed(size: 5),
+        [
+          [0, 1, 2, 3, 4],
+          [1, 2, 3, 4, 5],
+          [2, 3, 4, 5, 6],
+          [3, 4, 5, 6, 7],
+          [4, 5, 6, 7, 8],
+          [5, 6, 7, 8, 9],
+        ],
+      );
+      expect(
+        iterable.windowed(size: 5, step: 3),
+        [
+          [0, 1, 2, 3, 4],
+          [3, 4, 5, 6, 7],
+        ],
+      );
+      expect(
+        iterable.windowed(
+          size: 5,
+          step: 3,
+          partialWindows: true,
+        ),
+        [
+          [0, 1, 2, 3, 4],
+          [3, 4, 5, 6, 7],
+          [6, 7, 8, 9],
+          [9],
+        ],
+      );
+    });
+
+    test('windowedAndTransform', () {
+      final iterable = Iterable<int>.generate(10);
+      String transform(int element) => element.toString();
+
+      expect(
+        () => iterable.windowedAndTransform(
+          size: -1,
+          step: -1,
+          transform: transform,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => iterable.windowedAndTransform(
+          size: 0,
+          step: -1,
+          transform: transform,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => iterable.windowedAndTransform(
+          size: 0,
+          step: 0,
+          transform: transform,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => iterable.windowedAndTransform(
+          size: 1,
+          step: 0,
+          transform: transform,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        iterable.windowedAndTransform(
+          size: 5,
+          transform: transform,
+        ),
+        [
+          ['0', '1', '2', '3', '4'],
+          ['1', '2', '3', '4', '5'],
+          ['2', '3', '4', '5', '6'],
+          ['3', '4', '5', '6', '7'],
+          ['4', '5', '6', '7', '8'],
+          ['5', '6', '7', '8', '9'],
+        ],
+      );
+      expect(
+        iterable.windowedAndTransform(
+          size: 5,
+          step: 3,
+          transform: transform,
+        ),
+        [
+          ['0', '1', '2', '3', '4'],
+          ['3', '4', '5', '6', '7'],
+        ],
+      );
+      expect(
+        iterable.windowedAndTransform(
+          size: 5,
+          step: 3,
+          transform: transform,
+          partialWindows: true,
+        ),
+        [
+          ['0', '1', '2', '3', '4'],
+          ['3', '4', '5', '6', '7'],
+          ['6', '7', '8', '9'],
+          ['9'],
+        ],
+      );
+    });
+  });
+
   group('Where', () {
     test('whereIndexed', () {
       final whereIndexed = iterable.whereIndexed(

@@ -56,7 +56,7 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
   List<E> get sortedDescending => toList()..sort((a, b) => b.compareTo(a));
 }
 
-extension NullableIterator<E> on Iterable<E?> {
+extension NullableIterable<E> on Iterable<E?> {
   /// Returns an [Iterable] containing all elements that are not `null`.
   Iterable<E> whereNotNull() =>
       whereNot((element) => element == null).cast<E>();
@@ -70,6 +70,16 @@ extension NullableIterator<E> on Iterable<E?> {
 
     return cast<E>();
   }
+}
+
+extension PairIterable<E1, E2> on Iterable<Pair<E1, E2>> {
+  /// Returns a [Pair] of iterables, where first [Iterable] is built from the
+  /// first values of each [Pair] from this collection, second [Iterable] is
+  /// built from the second values of each [Pair] from this collection.
+  Pair<Iterable<E1>, Iterable<E2>> unzip() => Pair(
+        map((element) => element.first),
+        map((element) => element.second),
+      );
 }
 
 extension KtcIterable<E> on Iterable<E> {
@@ -865,6 +875,61 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a [List] of all elements sorted according to the specified
   /// [comparator].
   List<E> sortedWith(Comparator<E> comparator) => toList()..sort(comparator);
+
+  /// Returns a [Iterable] containing all [distinct] elements from both
+  /// collections.
+  Iterable<E> union(Iterable<E> other) => followedBy(other).distinct;
+
+  /// Returns a [Iterable] of snapshots of the window of the given [size]
+  /// sliding along this collection with the given [step], where each snapshot
+  /// is a [Iterable].
+  Iterable<Iterable<E>> windowed({
+    required int size,
+    int step = 1,
+    bool partialWindows = false,
+  }) {
+    if (size <= 0) {
+      throw ArgumentError.value(size, 'size', 'must be greater than zero');
+    }
+    if (step <= 0) {
+      throw ArgumentError.value(step, 'size', 'must be greater than zero');
+    }
+
+    final length = partialWindows
+        ? (this.length / step).ceil()
+        : (this.length - size) ~/ step + 1;
+
+    return Iterable.generate(
+      length,
+      (index) => skip(index * step).take(size),
+    );
+  }
+
+  /// Returns a [Iterable] of results of applying the given [transform] function
+  /// to an each [Iterable] representing a view over the window of the given
+  /// [size] sliding along this collection with the given [step].
+  Iterable<Iterable<R>> windowedAndTransform<R>({
+    required int size,
+    required R Function(E element) transform,
+    int step = 1,
+    bool partialWindows = false,
+  }) {
+    if (size <= 0) {
+      throw ArgumentError.value(size, 'size', 'must be greater than zero');
+    }
+    if (step <= 0) {
+      throw ArgumentError.value(step, 'size', 'must be greater than zero');
+    }
+
+    final length = partialWindows
+        ? (this.length / step).ceil()
+        : (this.length - size) ~/ step + 1;
+
+    return Iterable.generate(
+      length,
+      (index) => skip(index * step).take(size).map(transform),
+    );
+  }
 
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {
