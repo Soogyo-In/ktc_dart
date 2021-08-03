@@ -1,6 +1,9 @@
 name: ktc_dart
-description: Port of the Kotlin Collections library for dart.
+description: A package that implemented the features of the `Collections` library of `Kotlin` (v1.5).
 version: 0.1.0
+
+repository: https://github.com/Sugyo-In/ktc_dart.git
+issue_tracker: https://github.com/Sugyo-In/ktc_dart/issues
 
 environment:
   sdk: '>=2.13.4 <3.0.0'
