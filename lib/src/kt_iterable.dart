@@ -880,6 +880,22 @@ extension KtcIterable<E> on Iterable<E> {
   /// collections.
   Iterable<E> union(Iterable<E> other) => followedBy(other).distinct;
 
+  /// Returns a [Iterable] containing only elements matching the given [test].
+  Iterable<E> whereIndexed(bool Function(int index, E element) test) {
+    var index = 0;
+    return where((element) => test(index++, element));
+  }
+
+  /// Returns an [Iterable] containing all elements that are instances of
+  /// specified type parameter [T].
+  Iterable<T> whereIsInstance<T>() =>
+      where((element) => element is T).cast<T>();
+
+  /// Returns an [Iterable] containing all elements not matching the given
+  /// [test].
+  Iterable<E> whereNot(bool Function(E element) test) =>
+      where((element) => !test(element));
+
   /// Returns a [Iterable] of snapshots of the window of the given [size]
   /// sliding along this collection with the given [step], where each snapshot
   /// is a [Iterable].
@@ -931,21 +947,60 @@ extension KtcIterable<E> on Iterable<E> {
     );
   }
 
-  /// Returns a [Iterable] containing only elements matching the given [test].
-  Iterable<E> whereIndexed(bool Function(int index, E element) test) {
-    var index = 0;
-    return where((element) => test(index++, element));
+  Iterable<IndexedValue<E>> get withIndexed {
+    final iterator = this.iterator;
+
+    return Iterable.generate(
+      length,
+      (index) => IndexedValue(index, (iterator..moveNext()).current),
+    );
   }
 
-  /// Returns an [Iterable] containing all elements that are instances of
-  /// specified type parameter [T].
-  Iterable<T> whereIsInstance<T>() =>
-      where((element) => element is T).cast<T>();
+  /// Returns a [Iterable] of pairs built from the elements of this collection
+  /// and [other] collection with the same index. The returned [Iterable] has
+  /// length of the shortest collection.
+  Iterable<Pair<E, T>> zip<T>(Iterable<T> other) {
+    final iter1 = iterator;
+    final iter2 = other.iterator;
 
-  /// Returns an [Iterable] containing all elements not matching the given
-  /// [test].
-  Iterable<E> whereNot(bool Function(E element) test) =>
-      where((element) => !test(element));
+    return Iterable.generate(
+      min(length, other.length),
+      (index) => Pair((iter1..moveNext()).current, (iter2..moveNext()).current),
+    );
+  }
+
+  /// Returns a [Iterable] of values built from the elements of this collection
+  /// and the [other] collection with the same index using the provided
+  /// [transform] function applied to each pair of elements. The returned
+  /// [Iterable] has length of the shortest collection.
+  Iterable<R> zipAndTransform<T, R>(
+    Iterable<T> other,
+    R Function(Pair<E, T> pair) transform,
+  ) =>
+      zip(other).map(transform);
+
+  /// Returns a [Iterable] of pairs of each two adjacent elements in this
+  /// collection.
+  Iterable<Pair<E, E>> get zipWithNext {
+    final iterator1 = iterator;
+    final iterator2 = iterator..moveNext();
+
+    return Iterable.generate(
+      length - 1,
+      (index) => Pair(
+        (iterator1..moveNext()).current,
+        (iterator2..moveNext()).current,
+      ),
+    );
+  }
+
+  /// Returns a [Iterable] containing the results of applying the given
+  /// [transform] function to an each [Pair] of two adjacent elements in this
+  /// collection.
+  Iterable<R> zipWithNextAndTransform<R>(
+    R Function(Pair<E, E> pair) transform,
+  ) =>
+      zipWithNext.map(transform);
 
   /// Returns an [Iterable] containing all elements of the original collection
   /// except the elements contained in the [other] collection.

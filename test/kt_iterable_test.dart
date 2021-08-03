@@ -9,54 +9,22 @@ void main() {
     iterable = Iterable.generate(3);
   });
 
-  group('NumIterable', () {
-    test('average', () {
-      expect([1, 2].average, 1.5);
-      expect([1.0, 2.0].average, 1.5);
-      expect([double.nan, double.nan].average, isNaN);
-      expect([double.nan, 1.1].average, isNaN);
-      expect([double.nan, 1].average, isNaN);
-      expect([1, 2.0].average, 1.5);
-      expect([0, 0].average, 0.0);
+  test('average', () {
+    expect([1, 2].average, 1.5);
+    expect([1.0, 2.0].average, 1.5);
+    expect([double.nan, double.nan].average, isNaN);
+    expect([double.nan, 1.1].average, isNaN);
+    expect([double.nan, 1].average, isNaN);
+    expect([1, 2.0].average, 1.5);
+    expect([0, 0].average, 0.0);
 
-      expect([1, -2].average, -0.5);
-      expect([1.0, -2.0].average, -0.5);
-      expect([double.nan, -double.nan].average, isNaN);
-      expect([double.nan, -1.1].average, isNaN);
-      expect([double.nan, -1].average, isNaN);
-      expect([1, -2.0].average, -0.5);
-      expect([0, -0].average, 0.0);
-    });
-  });
-
-  group('DeepIterable', () {
-    test('flatten', () {
-      expect(
-        [
-          [1, 2],
-          [3, 4]
-        ].flatten,
-        [1, 2, 3, 4],
-      );
-
-      expect(
-        [
-          [1, 2],
-          [
-            3,
-            4,
-            [5, 6]
-          ]
-        ].flatten,
-        [
-          1,
-          2,
-          3,
-          4,
-          [5, 6]
-        ],
-      );
-    });
+    expect([1, -2].average, -0.5);
+    expect([1.0, -2.0].average, -0.5);
+    expect([double.nan, -double.nan].average, isNaN);
+    expect([double.nan, -1.1].average, isNaN);
+    expect([double.nan, -1].average, isNaN);
+    expect([1, -2.0].average, -0.5);
+    expect([0, -0].average, 0.0);
   });
 
   group('Associate', () {
@@ -185,6 +153,34 @@ void main() {
       expect(iterable.firstWhereOrNull((element) => element.isEven), 0);
       expect(iterable.firstWhereOrNull((element) => element.isNegative), null);
     });
+  });
+
+  test('flatten', () {
+    expect(
+      [
+        [1, 2],
+        [3, 4]
+      ].flatten,
+      [1, 2, 3, 4],
+    );
+
+    expect(
+      [
+        [1, 2],
+        [
+          3,
+          4,
+          [5, 6]
+        ]
+      ].flatten,
+      [
+        1,
+        2,
+        3,
+        4,
+        [5, 6]
+      ],
+    );
   });
 
   group('Fold', () {
@@ -717,6 +713,34 @@ void main() {
     );
   });
 
+  group('Where', () {
+    test('whereIndexed', () {
+      final whereIndexed = iterable.whereIndexed(
+        (index, element) => (index + element).isEven,
+      );
+
+      expect(whereIndexed, [0, 1, 2]);
+    });
+
+    test('whereIsInstance', () {
+      final whereIsInstance = [0, '1', 2].whereIsInstance<String>();
+
+      expect(whereIsInstance, ['1']);
+    });
+
+    test('whereNot', () {
+      final whereNot = iterable.whereNot((element) => element.isEven);
+
+      expect(whereNot, [1]);
+    });
+
+    test('whereNotNull', () {
+      final whereNotNull = [null, 1, null, 3].whereNotNull();
+
+      expect(whereNotNull, [1, 3]);
+    });
+  });
+
   group('Windowed', () {
     test('windowed', () {
       final iterable = Iterable.generate(10);
@@ -848,31 +872,46 @@ void main() {
     });
   });
 
-  group('Where', () {
-    test('whereIndexed', () {
-      final whereIndexed = iterable.whereIndexed(
-        (index, element) => (index + element).isEven,
+  test('withIndexed', () {
+    expect(iterable.withIndexed, [
+      IndexedValue(0, 0),
+      IndexedValue(1, 1),
+      IndexedValue(2, 2),
+    ]);
+  });
+
+  group('Zip', () {
+    test('zip', () {
+      expect([1, 2].zip(['1', '2', '3']), [Pair(1, '1'), Pair(2, '2')]);
+    });
+
+    test('zipAndTransform', () {
+      expect(
+        [1, 2].zipAndTransform(
+          ['1', '2', '3'],
+          (pair) => '${pair.first}${pair.second}',
+        ),
+        ['11', '22'],
       );
-
-      expect(whereIndexed, [0, 1, 2]);
     });
 
-    test('whereIsInstance', () {
-      final whereIsInstance = [0, '1', 2].whereIsInstance<String>();
-
-      expect(whereIsInstance, ['1']);
+    test('zipWithNext', () {
+      expect(
+        iterable.zipWithNext,
+        [
+          Pair(0, 1),
+          Pair(1, 2),
+        ],
+      );
     });
 
-    test('whereNot', () {
-      final whereNot = iterable.whereNot((element) => element.isEven);
-
-      expect(whereNot, [1]);
-    });
-
-    test('whereNotNull', () {
-      final whereNotNull = [null, 1, null, 3].whereNotNull();
-
-      expect(whereNotNull, [1, 3]);
+    test('zipWithNextAndTransform', () {
+      expect(
+        iterable.zipWithNextAndTransform(
+          (pair) => '${pair.first}${pair.second}',
+        ),
+        ['01', '12'],
+      );
     });
   });
 
