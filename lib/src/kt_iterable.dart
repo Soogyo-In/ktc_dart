@@ -385,8 +385,6 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns last index of [element], or `-1` if the collection does not
   /// contain element.
   int lastIndexOf(E element) {
-    if (!contains(element)) return -1;
-
     var lastIndex = -1;
     var index = 0;
 
@@ -1031,4 +1029,25 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<E> operator >>(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
       : take(length - count);
+
+  /// Returns a [Iterable] containing all elements that are contained by both
+  /// this collection and the specified collection.
+  ///
+  /// It is not in the Kotlin collection library. But I added it because it
+  /// looks useful.
+  Iterable<E> operator &(Iterable<E> other) => intersect(other);
+
+  /// Returns a [Iterable] containing all [distinct] elements from both
+  /// collections.
+  ///
+  /// It is not in the Kotlin collection library. But I added it because it
+  /// looks useful.
+  Iterable<E> operator |(Iterable<E> other) => union(other);
+
+  /// Returns a [Iterable] containing all elements from both collections without
+  /// [intersect].
+  ///
+  /// It is not in the Kotlin collection library. But I added it because it
+  /// looks useful.
+  Iterable<E> operator ^(Iterable<E> other) => (this - other) | (other - this);
 }
