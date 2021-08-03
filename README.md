@@ -11,7 +11,7 @@ This package made `Dart` friendly. So there's are some differences as below.
 5. Unlike `Kotlin`, `Dart` has no `method overloading`. So there are some features that can not implement to same name. When then change name slight differently. For example overloading methods `associateBy(keySelector)` and `associateBy(keySelector, valueTransform)` in `Kotlin` are splitted to two method as `associateBy(keySelector)` and `associateAndTransformBy(keySelector, valueTransfrom)`.
 
 ## Todos
-[x] Iterable
-[ ] List
-[ ] Set
-[ ] Map
+- [x] Iterable
+- [ ] List
+- [ ] Set
+- [ ] Map
