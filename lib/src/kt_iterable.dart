@@ -2,16 +2,49 @@ part of ktc_dart;
 
 extension NumIterable on Iterable<num> {
   /// Returns an average value of elements in the collection.
-  double get average =>
-      cast<num>().reduce((value, element) => value + element) / length;
+  double get average {
+    if (isEmpty) return 0;
+
+    final iterator = this.iterator..moveNext();
+    var sum = iterator.current;
+    var count = 1;
+
+    while (iterator.moveNext()) {
+      sum += iterator.current;
+      count++;
+    }
+
+    return sum / count;
+  }
 
   /// Returns the sum of all elements in the collection.
-  num get sum => reduce((value, element) => value + element);
+  num get sum {
+    if (isEmpty) return 0;
+
+    final iterator = this.iterator..moveNext();
+    var sum = iterator.current;
+
+    while (iterator.moveNext()) {
+      sum += iterator.current;
+    }
+
+    return sum;
+  }
 
   /// Returns the sum of all values produced by [selector] function applied to
   /// each element in the collection.
-  num sumOf(num Function(num element) selector) =>
-      fold(0, (value, element) => value + selector(element));
+  num sumOf(num Function(num element) selector) {
+    if (isEmpty) return 0;
+
+    final iterator = this.iterator..moveNext();
+    var sum = selector(iterator.current);
+
+    while (iterator.moveNext()) {
+      sum += selector(iterator.current);
+    }
+
+    return sum;
+  }
 }
 
 extension DeepIterable<E> on Iterable<Iterable<E>> {
@@ -27,7 +60,10 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var maxElement = iterator.current;
-    for (final element in skip(1)) {
+
+    while (iterator.moveNext()) {
+      final element = iterator.current;
+
       if (maxElement.compareTo(element) < 0) maxElement = element;
     }
 
@@ -40,7 +76,10 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var minElement = iterator.current;
-    for (final element in skip(1)) {
+
+    while (iterator.moveNext()) {
+      final element = iterator.current;
+
       if (minElement.compareTo(element) > 0) minElement = element;
     }
 
@@ -221,10 +260,8 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns the first element matching the given [test], or `null` if no such
   /// element was found.
   E? firstWhereOrNull(bool Function(E element) test) {
-    final iterator = this.iterator;
-
-    while (iterator.moveNext()) {
-      if (test(iterator.current)) return iterator.current;
+    for (final element in this) {
+      if (test(element)) return element;
     }
 
     return null;
@@ -262,7 +299,9 @@ extension KtcIterable<E> on Iterable<E> {
       final key = keySelector(element);
 
       groups.putIfAbsent(
-          key, () => where((element) => keySelector(element) == key));
+        key,
+        () => where((element) => keySelector(element) == key),
+      );
     }
 
     return groups;
@@ -402,11 +441,10 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns the last element matching the given [test], or `null` if no such
   /// element was found.
   E? lastWhereOrNull(bool Function(E element) test) {
-    final iterator = this.iterator;
     E? element;
 
-    while (iterator.moveNext()) {
-      if (test(iterator.current)) element = iterator.current;
+    for (final elm in this) {
+      if (test(elm)) element = elm;
     }
 
     return element;
@@ -469,6 +507,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var maxValue = selector(iterator.current);
+
     while (iterator.moveNext()) {
       final value = selector(iterator.current);
 
@@ -486,6 +525,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var maxValue = selector(iterator.current);
+
     while (iterator.moveNext()) {
       final value = selector(iterator.current);
 
@@ -503,6 +543,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var maxValue = selector(iterator.current);
+
     while (iterator.moveNext()) {
       final value = selector(iterator.current);
 
@@ -541,7 +582,9 @@ extension KtcIterable<E> on Iterable<E> {
     final iterator = this.iterator..moveNext();
     var maxElement = iterator.current;
 
-    for (final element in skip(1)) {
+    while (iterator.moveNext()) {
+      final element = iterator.current;
+
       if (comparator(maxElement, element) < 0) maxElement = element;
     }
 
@@ -577,6 +620,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var minValue = selector(iterator.current);
+
     while (iterator.moveNext()) {
       final value = selector(iterator.current);
 
@@ -594,6 +638,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var minValue = selector(iterator.current);
+
     while (iterator.moveNext()) {
       final value = selector(iterator.current);
 
@@ -611,6 +656,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     final iterator = this.iterator..moveNext();
     var minValue = selector(iterator.current);
+
     while (iterator.moveNext()) {
       final value = selector(iterator.current);
 
@@ -826,6 +872,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     for (final element in this) {
       if (found) return null;
+
       single = element;
       found = true;
     }
@@ -842,6 +889,7 @@ extension KtcIterable<E> on Iterable<E> {
     for (final element in this) {
       if (test(element)) {
         if (found) return null;
+
         single = element;
         found = true;
       }
@@ -881,6 +929,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a [Iterable] containing only elements matching the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) {
     var index = 0;
+
     return where((element) => test(index++, element));
   }
 
@@ -905,8 +954,9 @@ extension KtcIterable<E> on Iterable<E> {
     if (size <= 0) {
       throw ArgumentError.value(size, 'size', 'must be greater than zero');
     }
+
     if (step <= 0) {
-      throw ArgumentError.value(step, 'size', 'must be greater than zero');
+      throw ArgumentError.value(step, 'step', 'must be greater than zero');
     }
 
     final length = partialWindows
@@ -931,8 +981,9 @@ extension KtcIterable<E> on Iterable<E> {
     if (size <= 0) {
       throw ArgumentError.value(size, 'size', 'must be greater than zero');
     }
+
     if (step <= 0) {
-      throw ArgumentError.value(step, 'size', 'must be greater than zero');
+      throw ArgumentError.value(step, 'step', 'must be greater than zero');
     }
 
     final length = partialWindows

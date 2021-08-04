@@ -10,6 +10,7 @@ void main() {
   });
 
   test('average', () {
+    expect(<num>[].average, 0.0);
     expect([1, 2].average, 1.5);
     expect([1.0, 2.0].average, 1.5);
     expect([double.nan, double.nan].average, isNaN);
@@ -678,10 +679,12 @@ void main() {
 
   group('Sum', () {
     test('sum', () {
+      expect(<num>[].sum, 0);
       expect([0, 2.0, -1].sum, 1.0);
     });
 
     test('sumOf', () {
+      expect(<num>[].sumOf((element) => -element), 0);
       expect([0, 2.0, -1].sumOf((element) => -element), -1.0);
     });
   });
