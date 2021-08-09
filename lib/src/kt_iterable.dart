@@ -97,7 +97,7 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 
 extension NullableIterable<E> on Iterable<E?> {
   /// Returns an [Iterable] containing all elements that are not `null`.
-  Iterable<E> whereNotNull() =>
+  Iterable<E> get whereNotNull =>
       whereNot((element) => element == null).cast<E>();
 
   /// Returns an original collection containing all the non-null elements,
@@ -152,22 +152,21 @@ extension KtcIterable<E> on Iterable<E> {
   ///
   /// The last [Iterable] in the resulting [Iterable] may have fewer elements
   /// than the given [size].
-  Iterable<Iterable<E>> chunked(int size) {
-    final length = this.length;
-
-    return Iterable.generate(
-      length.isEven ? length ~/ size : length ~/ size + 1,
-      (index) => skip(index * size).take(size),
-    );
-  }
+  Iterable<Iterable<E>> chunked(int size) =>
+      windowed(size: size, step: size, partialWindows: true);
 
   /// Splits this collection into several iterables each not exceeding the given
   /// [size] and applies the given [transform] function to an each.
   Iterable<T> chunkedAndTransform<T>(
     int size,
-    T Function(Iterable<E> chunk) transmform,
+    T Function(Iterable<E> chunk) transform,
   ) =>
-      chunked(size).map(transmform);
+      windowedAndTransform<T>(
+        size: size,
+        step: size,
+        transform: transform,
+        partialWindows: true,
+      );
 
   /// Returns the number of elements matching the given [test].
   /// If [test] is not provided it returns the number of elements in the
@@ -179,6 +178,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// collection.
   Iterable<E> get distinct {
     final set = <E>{};
+
     return where((element) => set.add(element));
   }
 
@@ -186,6 +186,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// having distinct keys returned by the given [selector] function.
   Iterable<E> distinctBy<K>(K Function(E element) selector) {
     final set = <K>{};
+
     return where((element) => set.add(selector(element)));
   }
 
@@ -470,13 +471,13 @@ extension KtcIterable<E> on Iterable<E> {
   ) {
     var index = 0;
 
-    return map((element) => transform(index++, element)).whereNotNull();
+    return map((element) => transform(index++, element)).whereNotNull;
   }
 
   /// Returns an [Iterable] containing only the non-null results of applying the
   /// given [transform] function to each element in the original collection.
   Iterable<R> mapNotNull<R>(R? Function(E element) transform) =>
-      map(transform).whereNotNull();
+      map(transform).whereNotNull;
 
   /// Returns the first element yielding the largest value of the given
   /// [selector] or null if there are no elements.
@@ -704,10 +705,16 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns true if the collection has no elements.
   ///
-  /// If [test] is provided it returns true if no elements match the given
+  /// If [test] is provided it returns `true` if no elements match the given
   /// [test].
-  bool none([bool Function(E element)? test]) =>
-      test == null ? isEmpty : !any(test);
+  bool none([bool Function(E element)? test]) {
+    for (final element in this) {
+      if (test == null) return false;
+      if (test.call(element)) return false;
+    }
+
+    return true;
+  }
 
   /// Performs the given [action] on each element and returns the collection
   /// itself afterwards.
@@ -972,9 +979,9 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a [Iterable] of results of applying the given [transform] function
   /// to an each [Iterable] representing a view over the window of the given
   /// [size] sliding along this collection with the given [step].
-  Iterable<Iterable<R>> windowedAndTransform<R>({
+  Iterable<R> windowedAndTransform<R>({
     required int size,
-    required R Function(E element) transform,
+    required R Function(Iterable<E> chunk) transform,
     int step = 1,
     bool partialWindows = false,
   }) {
@@ -992,10 +999,13 @@ extension KtcIterable<E> on Iterable<E> {
 
     return Iterable.generate(
       length,
-      (index) => skip(index * step).take(size).map(transform),
+      (index) => transform(skip(index * step).take(size)),
     );
   }
 
+  /// Returns a lazy [Iterable] that wraps each element of the original
+  /// collection into an [IndexedValue] containing the index of that element and
+  /// the element itself.
   Iterable<IndexedValue<E>> get withIndexed {
     final iterator = this.iterator;
 
