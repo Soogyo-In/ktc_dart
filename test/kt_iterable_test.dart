@@ -1028,8 +1028,8 @@ void main() {
     });
   });
 
-  test('withIndexed', () {
-    expect(iterable.withIndexed, [
+  test('withIndex', () {
+    expect(iterable.withIndex, [
       IndexedValue(0, 0),
       IndexedValue(1, 1),
       IndexedValue(2, 2),

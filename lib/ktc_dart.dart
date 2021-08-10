@@ -6,3 +6,4 @@ part 'src/kt_exceptions.dart';
 part 'src/kt_indexed_value.dart';
 part 'src/kt_iterable.dart';
 part 'src/kt_pair.dart';
+part 'src/kt_list.dart';

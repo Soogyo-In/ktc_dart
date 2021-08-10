@@ -1006,7 +1006,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a lazy [Iterable] that wraps each element of the original
   /// collection into an [IndexedValue] containing the index of that element and
   /// the element itself.
-  Iterable<IndexedValue<E>> get withIndexed {
+  Iterable<IndexedValue<E>> get withIndex {
     final iterator = this.iterator;
 
     return Iterable.generate(

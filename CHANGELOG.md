@@ -9,5 +9,5 @@
 - The `windowedAndTransform` returns `Iterable<R>`. I accidentally wrote the wrong return type.
 
 ## 0.1.0
-
+### Updates
 - Implement `Iterable`.
