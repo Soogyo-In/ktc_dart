@@ -1089,7 +1089,9 @@ extension KtcIterable<E> on Iterable<E> {
   /// looks useful.
   Iterable<E> operator >>(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
-      : take(length - count);
+      : count > length
+          ? Iterable<E>.empty()
+          : take(length - count);
 
   /// Returns a [Iterable] containing all elements that are contained by both
   /// this collection and the specified collection.

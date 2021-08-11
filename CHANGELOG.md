@@ -1,3 +1,7 @@
+## 0.1.2
+### Amends
+- Change behavior of `>>` operator. It returns empty `Iterable` when `count` parameter is greater than it's `length`.
+
 ## 0.1.1
 ### Amends
 - Change `whereNotNull` to `getter`.
@@ -9,5 +13,5 @@
 - The `windowedAndTransform` returns `Iterable<R>`. I accidentally wrote the wrong return type.
 
 ## 0.1.0
-
+### Updates
 - Implement `Iterable`.
