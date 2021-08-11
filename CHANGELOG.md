@@ -1,3 +1,7 @@
+## 0.1.2
+### Amends
+- Change behavior of `>>` operator. It returns empty `Iterable` when `count` parameter is greater than it's `length`.
+
 ## 0.1.1
 ### Amends
 - Change `whereNotNull` to `getter`.

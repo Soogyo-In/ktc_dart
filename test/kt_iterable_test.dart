@@ -1109,13 +1109,13 @@ void main() {
     });
 
     test('>>', () {
-      expect(() => empty >> 1, throwsA(isArgumentError));
+      expect(empty >> 1, []);
       expect(() => iterable >> -1, throwsA(isArgumentError));
       expect(iterable >> 0, [0, 1, 2]);
       expect(iterable >> 1, [0, 1]);
       expect(iterable >> 2, [0]);
       expect(iterable >> 3, []);
-      expect(() => iterable >> 4, throwsA(isRangeError));
+      expect(iterable >> 4, []);
     });
 
     test('^', () {
