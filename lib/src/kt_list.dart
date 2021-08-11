@@ -25,7 +25,7 @@ extension ComparableList<E extends Comparable> on List<E> {
 
 extension NullableList<E> on List<E?> {
   /// Returns an [List] containing all elements that are not `null`.
-  List<E> whereNotNull() {
+  List<E> get whereNotNull {
     final list = <E>[];
 
     for (final element in this) {
@@ -94,10 +94,8 @@ extension KtcList<E> on List<E> {
   int count([bool Function(E element)? test]) {
     var count = 0;
 
-    if (test != null) {
-      for (final element in this) {
-        if (test(element)) count++;
-      }
+    for (final element in this) {
+      if (test?.call(element) ?? true) count++;
     }
 
     return count;
@@ -201,7 +199,7 @@ extension KtcList<E> on List<E> {
     var index = 0;
 
     for (final element in this) {
-      list.add(transform(index, element));
+      list.add(transform(index++, element));
     }
 
     return list;
@@ -217,7 +215,7 @@ extension KtcList<E> on List<E> {
     var index = 0;
 
     for (final element in this) {
-      final value = transform(index, element);
+      final value = transform(index++, element);
 
       if (value != null) list.add(value);
     }
@@ -564,7 +562,9 @@ extension KtcList<E> on List<E> {
   /// looks useful.
   List<E> operator <<(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
-      : sublist(count);
+      : count > length
+          ? []
+          : sublist(count);
 
   /// Returns an [List] that has been removed by the number of [count] from the
   /// end.
@@ -575,7 +575,9 @@ extension KtcList<E> on List<E> {
   /// looks useful.
   List<E> operator >>(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
-      : sublist(0, length - count);
+      : count > length
+          ? []
+          : sublist(0, length - count);
 
   /// Returns a [List] containing all elements that are contained by both this
   /// collection and the specified collection.

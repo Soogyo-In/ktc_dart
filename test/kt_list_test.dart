@@ -482,13 +482,13 @@ void main() {
     });
 
     test('>>', () {
-      expect(() => empty >> 1, throwsA(isArgumentError));
+      expect(empty >> 1, []);
       expect(() => list >> -1, throwsA(isArgumentError));
       expect(list >> 0, [0, 1, 2]);
       expect(list >> 1, [0, 1]);
       expect(list >> 2, [0]);
       expect(list >> 3, []);
-      expect(() => list >> 4, throwsA(isRangeError));
+      expect(list >> 4, []);
     });
 
     test('^', () {
