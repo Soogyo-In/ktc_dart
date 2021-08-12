@@ -1,5 +1,30 @@
 part of ktc_dart;
 
+@visibleForTesting
+void rangeCheck({
+  required int length,
+  required int fromIndex,
+  required int toIndex,
+}) {
+  if (fromIndex > toIndex) {
+    throw ArgumentError.value(
+      fromIndex,
+      'fromIndex',
+      'greater than toIndex ($toIndex).',
+    );
+  }
+  if (fromIndex < 0) {
+    throw RangeError.value(fromIndex, 'fromIndex', 'less than zero.');
+  }
+  if (toIndex > length) {
+    throw RangeError.value(
+      toIndex,
+      'toIndex',
+      'greater than size ($length).',
+    );
+  }
+}
+
 extension DeepList<E> on List<List<E>> {
   /// Returns a single [List] of all elements from all [List]s in the [List].
   List<E> get flatten {
@@ -14,6 +39,42 @@ extension DeepList<E> on List<List<E>> {
 }
 
 extension ComparableList<E extends Comparable> on List<E> {
+  /// Searches this [List] or its range for the provided element using the
+  /// binary search algorithm. The [List] is expected to be sorted into
+  /// ascending order according to the [Comparable] natural ordering of its
+  /// elements, otherwise the result is undefined.
+  int binarySearch({
+    E? element,
+    int? fromIndex,
+    int? toIndex,
+  }) {
+    fromIndex ??= 0;
+    toIndex ??= length;
+
+    rangeCheck(length: length, fromIndex: fromIndex, toIndex: toIndex);
+
+    var low = fromIndex;
+    var high = toIndex - 1;
+
+    while (low <= high) {
+      // todo: Change to `>>>` operator
+      // Change when stable `Dart` SDK version becomes to 2.14.0 over.
+      final mid = (low + high) ~/ 2;
+      final midVal = this[mid];
+      final cmp = element == null ? 1 : midVal.compareTo(element);
+
+      if (cmp < 0) {
+        low = mid + 1;
+      } else if (cmp > 0) {
+        high = mid - 1;
+      } else {
+        return mid;
+      }
+    }
+
+    return -(low + 1);
+  }
+
   /// Returns a [List] of all elements sorted according to their natural sort
   /// order.
   List<E> get sorted => this..sort();
@@ -68,6 +129,95 @@ extension PairList<E1, E2> on List<Pair<E1, E2>> {
 }
 
 extension KtcList<E> on List<E> {
+  /// Searches this [List] or its range for an element having the key returned
+  /// by the specified selector function equal to the provided key value using
+  /// the binary search algorithm. The [List] is expected to be sorted into
+  /// ascending order according to the Comparable natural ordering of keys of
+  /// its elements. otherwise the result is undefined.
+  int binarySearchBy<K extends Comparable?>({
+    required K? Function(E element) selector,
+    K? key,
+    int? fromIndex,
+    int? toIndex,
+  }) =>
+      binarySearchWithComparison(
+        comparison: (element) =>
+            key == null ? 1 : selector(element)?.compareTo(key) ?? -1,
+        fromIndex: fromIndex,
+        toIndex: toIndex,
+      );
+
+  /// Searches this [List] or its range for the provided element using the
+  /// binary search algorithm. The [List] is expected to be sorted into
+  /// ascending order according to the specified comparator, otherwise the
+  /// result is undefined.
+  int binarySearchWithComparator({
+    required E element,
+    required Comparator<E> comparator,
+    int? fromIndex,
+    int? toIndex,
+  }) {
+    fromIndex ??= 0;
+    toIndex ??= length;
+
+    rangeCheck(length: length, fromIndex: fromIndex, toIndex: toIndex);
+
+    var low = fromIndex;
+    var high = toIndex - 1;
+
+    while (low <= high) {
+      // todo: Change to `>>>` operator
+      // Change when stable `Dart` SDK version becomes to 2.14.0 over.
+      final mid = (low + high) ~/ 2;
+      final midVal = this[mid];
+      final cmp = comparator(midVal, element);
+
+      if (cmp < 0) {
+        low = mid + 1;
+      } else if (cmp > 0) {
+        high = mid - 1;
+      } else {
+        return mid;
+      }
+    }
+
+    return -(low + 1);
+  }
+
+  /// Searches this [List] or its range for an element for which the given
+  /// comparison function returns zero using the binary search algorithm.
+  int binarySearchWithComparison({
+    required int Function(E element) comparison,
+    int? fromIndex,
+    int? toIndex,
+  }) {
+    fromIndex ??= 0;
+    toIndex ??= length;
+
+    rangeCheck(length: length, fromIndex: fromIndex, toIndex: toIndex);
+
+    var low = fromIndex;
+    var high = toIndex - 1;
+
+    while (low <= high) {
+      // todo: Change to `>>>` operator
+      // Change when stable `Dart` SDK version becomes to 2.14.0 over.
+      final mid = (low + high) ~/ 2;
+      final midVal = this[mid];
+      final cmp = comparison(midVal);
+
+      if (cmp < 0) {
+        low = mid + 1;
+      } else if (cmp > 0) {
+        high = mid - 1;
+      } else {
+        return mid;
+      }
+    }
+
+    return -(low + 1);
+  }
+
   /// Splits this collection into a [List] of iterables each not exceeding the
   /// given [size].
   ///
@@ -88,6 +238,18 @@ extension KtcList<E> on List<E> {
         transform: transform,
         partialWindows: true,
       );
+
+  /// Checks if all elements in the specified collection are contained in this
+  /// collection.
+  bool containsAll(Iterable<E> other) {
+    var result = true;
+
+    for (final element in other) {
+      result &= contains(element);
+    }
+
+    return result;
+  }
 
   /// Returns the number of elements matching the given [test].
   /// If [test] is not provided it returns the number of elements in the [List].
@@ -180,6 +342,9 @@ extension KtcList<E> on List<E> {
     return groups;
   }
 
+  /// Returns an [Iterable] of the valid indices for this collection.
+  Iterable<int> get indices => Iterable<int>.generate(length);
+
   /// Returns a [List] containing all elements that are contained by both this
   /// collection and the specified collection.
   List<E> intersect(Iterable<E> other) {
@@ -191,6 +356,9 @@ extension KtcList<E> on List<E> {
 
     return list;
   }
+
+  /// Returns the index of the last item in the list or -1 if the list is empty.
+  int get lastIndex => length - 1;
 
   /// Returns an [List] containing the results of applying the given [transform]
   /// function to each element and its index in the original collection.
