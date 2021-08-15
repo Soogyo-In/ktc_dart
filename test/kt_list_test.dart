@@ -304,6 +304,24 @@ void main() {
     });
   });
 
+  group('Drop', () {
+    test('dropLast', () {
+      expect(() => empty.dropLast(-1), throwsArgumentError);
+      expect(empty.dropLast(0), []);
+      expect(empty.dropLast(1), []);
+      expect(() => list.dropLast(-1), throwsArgumentError);
+      expect(list.dropLast(0), [0, 1, 2]);
+      expect(list.dropLast(1), [0, 1]);
+      expect(list.dropLast(4), []);
+    });
+
+    test('dropLastWhile', () {
+      expect(empty.dropLastWhile((element) => element > 1), []);
+      expect(list.dropLastWhile((element) => element > 1), [0, 1]);
+      expect(list.dropLastWhile((element) => element == 1), [0, 1, 2]);
+    });
+  });
+
   test('expandIndexed', () {
     Iterable<int> transform(int index, int element) => [index, element];
 
@@ -334,6 +352,50 @@ void main() {
         [0, 1]
       ],
     );
+  });
+
+  group('Fold', () {
+    test('foldRight', () {
+      String combine(String previousValue, int element) =>
+          element > 1 ? previousValue : previousValue + element.toString();
+
+      expect(empty.foldRight('', combine), '');
+      expect(list.foldRight('', combine), '10');
+    });
+
+    test('foldRightIndexed', () {
+      String combine(int index, String previousValue, int element) =>
+          element > 1
+              ? previousValue
+              : previousValue + (index + element).toString();
+
+      expect(empty.foldRightIndexed('', combine), '');
+      expect(list.foldRightIndexed('', combine), '20');
+    });
+
+    test('runningFold', () {
+      final initialValue = 'start';
+      String combine(String previousValue, int element) =>
+          '$previousValue$element';
+
+      expect(empty.runningFold(initialValue, combine), ['start']);
+      expect(
+        list.runningFold(initialValue, combine),
+        ['start', 'start0', 'start01', 'start012'],
+      );
+    });
+
+    test('runningFoldIndexed', () {
+      final initialValue = 'start';
+      String combine(int index, String previousValue, int element) =>
+          '$previousValue$element$index';
+
+      expect(empty.runningFoldIndexed(initialValue, combine), ['start']);
+      expect(
+        list.runningFoldIndexed(initialValue, combine),
+        ['start', 'start00', 'start0011', 'start001122'],
+      );
+    });
   });
 
   group('GroupBy', () {
@@ -441,6 +503,16 @@ void main() {
     expect(partition.second, [1]);
   });
 
+  group('Random', () {
+    test('random', () {
+      expect(() => empty.random(), throwsA(isA<NoSuchElementException>()));
+    });
+
+    test('randomOrNull', () {
+      expect(empty.randomOrNull(), null);
+    });
+  });
+
   group('Reduce', () {
     test('runningReduce', () {
       int combine(previousValue, element) => previousValue + element;
@@ -464,6 +536,13 @@ void main() {
       () => [0, null, 2].requireNoNulls,
       throwsA(isArgumentError),
     );
+  });
+
+  test('slice', () {
+    expect(() => empty.slice([0]), throwsRangeError);
+    expect(list.slice([0, 1]), [0, 1]);
+    expect(list.slice([0, 2]), [0, 2]);
+    expect(() => list.slice([2, 3]), throwsRangeError);
   });
 
   group('Sort', () {
