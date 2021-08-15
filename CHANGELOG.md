@@ -1,3 +1,7 @@
+## 0.2.0
+### Updates
+- Implement `List`.
+
 ## 0.1.2
 ### Amends
 - Change behavior of `>>` operator. It returns empty `Iterable` when `count` parameter is greater than it's `length`.
