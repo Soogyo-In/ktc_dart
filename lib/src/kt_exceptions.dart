@@ -6,8 +6,7 @@ class NoSuchElementException implements Exception {
   NoSuchElementException([this.message]);
 
   @override
-  String toString() {
-    if (message == null) return "NoSuchElementException";
-    return "NoSuchElementException: $message";
-  }
+  String toString() => message == null
+      ? "NoSuchElementException"
+      : "NoSuchElementException: $message";
 }

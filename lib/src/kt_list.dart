@@ -1,5 +1,30 @@
 part of ktc_dart;
 
+@visibleForTesting
+void rangeCheck({
+  required int length,
+  required int fromIndex,
+  required int toIndex,
+}) {
+  if (fromIndex > toIndex) {
+    throw ArgumentError.value(
+      fromIndex,
+      'fromIndex',
+      'greater than toIndex ($toIndex).',
+    );
+  }
+  if (fromIndex < 0) {
+    throw RangeError.value(fromIndex, 'fromIndex', 'less than zero.');
+  }
+  if (toIndex > length) {
+    throw RangeError.value(
+      toIndex,
+      'toIndex',
+      'greater than size ($length).',
+    );
+  }
+}
+
 extension DeepList<E> on List<List<E>> {
   /// Returns a single [List] of all elements from all [List]s in the [List].
   List<E> get flatten {
@@ -14,6 +39,42 @@ extension DeepList<E> on List<List<E>> {
 }
 
 extension ComparableList<E extends Comparable> on List<E> {
+  /// Searches this [List] or its range for the provided element using the
+  /// binary search algorithm. The [List] is expected to be sorted into
+  /// ascending order according to the [Comparable] natural ordering of its
+  /// elements, otherwise the result is undefined.
+  int binarySearch({
+    E? element,
+    int? fromIndex,
+    int? toIndex,
+  }) {
+    fromIndex ??= 0;
+    toIndex ??= length;
+
+    rangeCheck(length: length, fromIndex: fromIndex, toIndex: toIndex);
+
+    var low = fromIndex;
+    var high = toIndex - 1;
+
+    while (low <= high) {
+      // todo: Change to `>>>` operator
+      // Change when stable `Dart` SDK version becomes to 2.14.0 over.
+      final mid = (low + high) ~/ 2;
+      final midVal = this[mid];
+      final cmp = element == null ? 1 : midVal.compareTo(element);
+
+      if (cmp < 0) {
+        low = mid + 1;
+      } else if (cmp > 0) {
+        high = mid - 1;
+      } else {
+        return mid;
+      }
+    }
+
+    return -(low + 1);
+  }
+
   /// Returns a [List] of all elements sorted according to their natural sort
   /// order.
   List<E> get sorted => this..sort();
@@ -25,7 +86,7 @@ extension ComparableList<E extends Comparable> on List<E> {
 
 extension NullableList<E> on List<E?> {
   /// Returns an [List] containing all elements that are not `null`.
-  List<E> whereNotNull() {
+  List<E> get whereNotNull {
     final list = <E>[];
 
     for (final element in this) {
@@ -68,6 +129,95 @@ extension PairList<E1, E2> on List<Pair<E1, E2>> {
 }
 
 extension KtcList<E> on List<E> {
+  /// Searches this [List] or its range for an element having the key returned
+  /// by the specified selector function equal to the provided key value using
+  /// the binary search algorithm. The [List] is expected to be sorted into
+  /// ascending order according to the Comparable natural ordering of keys of
+  /// its elements. otherwise the result is undefined.
+  int binarySearchBy<K extends Comparable?>({
+    required K? Function(E element) selector,
+    K? key,
+    int? fromIndex,
+    int? toIndex,
+  }) =>
+      binarySearchWithComparison(
+        comparison: (element) =>
+            key == null ? 1 : selector(element)?.compareTo(key) ?? -1,
+        fromIndex: fromIndex,
+        toIndex: toIndex,
+      );
+
+  /// Searches this [List] or its range for the provided element using the
+  /// binary search algorithm. The [List] is expected to be sorted into
+  /// ascending order according to the specified comparator, otherwise the
+  /// result is undefined.
+  int binarySearchWithComparator({
+    required E element,
+    required Comparator<E> comparator,
+    int? fromIndex,
+    int? toIndex,
+  }) {
+    fromIndex ??= 0;
+    toIndex ??= length;
+
+    rangeCheck(length: length, fromIndex: fromIndex, toIndex: toIndex);
+
+    var low = fromIndex;
+    var high = toIndex - 1;
+
+    while (low <= high) {
+      // todo: Change to `>>>` operator
+      // Change when stable `Dart` SDK version becomes to 2.14.0 over.
+      final mid = (low + high) ~/ 2;
+      final midVal = this[mid];
+      final cmp = comparator(midVal, element);
+
+      if (cmp < 0) {
+        low = mid + 1;
+      } else if (cmp > 0) {
+        high = mid - 1;
+      } else {
+        return mid;
+      }
+    }
+
+    return -(low + 1);
+  }
+
+  /// Searches this [List] or its range for an element for which the given
+  /// comparison function returns zero using the binary search algorithm.
+  int binarySearchWithComparison({
+    required int Function(E element) comparison,
+    int? fromIndex,
+    int? toIndex,
+  }) {
+    fromIndex ??= 0;
+    toIndex ??= length;
+
+    rangeCheck(length: length, fromIndex: fromIndex, toIndex: toIndex);
+
+    var low = fromIndex;
+    var high = toIndex - 1;
+
+    while (low <= high) {
+      // todo: Change to `>>>` operator
+      // Change when stable `Dart` SDK version becomes to 2.14.0 over.
+      final mid = (low + high) ~/ 2;
+      final midVal = this[mid];
+      final cmp = comparison(midVal);
+
+      if (cmp < 0) {
+        low = mid + 1;
+      } else if (cmp > 0) {
+        high = mid - 1;
+      } else {
+        return mid;
+      }
+    }
+
+    return -(low + 1);
+  }
+
   /// Splits this collection into a [List] of iterables each not exceeding the
   /// given [size].
   ///
@@ -89,15 +239,25 @@ extension KtcList<E> on List<E> {
         partialWindows: true,
       );
 
+  /// Checks if all elements in the specified collection are contained in this
+  /// collection.
+  bool containsAll(Iterable<E> other) {
+    var result = true;
+
+    for (final element in other) {
+      result &= contains(element);
+    }
+
+    return result;
+  }
+
   /// Returns the number of elements matching the given [test].
   /// If [test] is not provided it returns the number of elements in the [List].
   int count([bool Function(E element)? test]) {
     var count = 0;
 
-    if (test != null) {
-      for (final element in this) {
-        if (test(element)) count++;
-      }
+    for (final element in this) {
+      if (test?.call(element) ?? true) count++;
     }
 
     return count;
@@ -120,6 +280,35 @@ extension KtcList<E> on List<E> {
     return list;
   }
 
+  /// Returns a [List] containing all elements except last [count] elements.
+  List<E> dropLast(int count) {
+    if (count.isNegative) {
+      throw ArgumentError.value(
+        count,
+        'count',
+        'Must be greater than zero',
+      );
+    }
+
+    final length = this.length - count;
+
+    return length.isNegative ? [] : sublist(0, length);
+  }
+
+  /// Returns a [List] containing all elements except first elements that
+  /// satisfy the given [test].
+  List<E> dropLastWhile(bool Function(E element) test) {
+    var count = 0;
+
+    for (final element in reversed) {
+      if (!test(element)) break;
+
+      count++;
+    }
+
+    return dropLast(count);
+  }
+
   /// Returns a single [List] of all elements yielded from results of
   /// [transform] function being invoked on each element and its index in the
   /// original collection.
@@ -134,6 +323,29 @@ extension KtcList<E> on List<E> {
     }
 
     return list;
+  }
+
+  /// Accumulates value starting with [initialValue] and applying [combine]
+  /// function from right to left to each element and current accumulator value.
+  R foldRight<R>(
+    R initialValue,
+    R Function(R previousValue, E element) combine,
+  ) =>
+      reversed.fold(initialValue, combine);
+
+  /// Accumulates value starting with [initialValue] and applying [combine]
+  /// function from right to left to each element with its index in the original
+  /// [List] and current accumulator value.
+  R foldRightIndexed<R>(
+    R initialValue,
+    R Function(int index, R previousValue, E element) combine,
+  ) {
+    var index = length - 1;
+
+    return reversed.fold(
+      initialValue,
+      (previousValue, element) => combine(index--, previousValue, element),
+    );
   }
 
   /// Groups elements of the original collection by the key returned by the
@@ -182,6 +394,9 @@ extension KtcList<E> on List<E> {
     return groups;
   }
 
+  /// Returns an [Iterable] of the valid indices for this collection.
+  Iterable<int> get indices => Iterable<int>.generate(length);
+
   /// Returns a [List] containing all elements that are contained by both this
   /// collection and the specified collection.
   List<E> intersect(Iterable<E> other) {
@@ -194,6 +409,9 @@ extension KtcList<E> on List<E> {
     return list;
   }
 
+  /// Returns the index of the last item in the list or -1 if the list is empty.
+  int get lastIndex => length - 1;
+
   /// Returns an [List] containing the results of applying the given [transform]
   /// function to each element and its index in the original collection.
   List<R> mapIndexed<R>(R Function(int index, E element) transform) {
@@ -201,7 +419,7 @@ extension KtcList<E> on List<E> {
     var index = 0;
 
     for (final element in this) {
-      list.add(transform(index, element));
+      list.add(transform(index++, element));
     }
 
     return list;
@@ -217,7 +435,7 @@ extension KtcList<E> on List<E> {
     var index = 0;
 
     for (final element in this) {
-      final value = transform(index, element);
+      final value = transform(index++, element);
 
       if (value != null) list.add(value);
     }
@@ -278,6 +496,20 @@ extension KtcList<E> on List<E> {
 
     return Pair(list1, list2);
   }
+
+  /// Returns a random element from this collection using the specified source
+  /// of randomness.
+  E random([Random? random]) {
+    if (isEmpty) throw NoSuchElementException('Collection is empty.');
+
+    random ??= Random();
+
+    return this[random.nextInt(length - 1)];
+  }
+
+  /// Returns a random element from this collection using the specified source
+  /// of randomness, or null if this collection is empty.
+  E? randomOrNull([Random? random]) => isEmpty ? null : this.random(random);
 
   /// Returns a [List] containing successive accumulation values generated by
   /// applying [combine] function from left to right to each element and current
@@ -362,6 +594,17 @@ extension KtcList<E> on List<E> {
   /// Returns a new [List] with the elements of this list randomly shuffled
   /// using the specified [random] instance as the source of randomness.
   List<E> shuffled([Random? random]) => this..shuffle();
+
+  /// Returns a [List] containing elements at specified [indices].
+  List<E> slice(Iterable<int> indices) {
+    final list = <E>[];
+
+    for (final index in indices) {
+      list.add(this[index]);
+    }
+
+    return list;
+  }
 
   /// Returns a [List] of all elements sorted according to the specified
   /// [comparator].
@@ -564,7 +807,9 @@ extension KtcList<E> on List<E> {
   /// looks useful.
   List<E> operator <<(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
-      : sublist(count);
+      : count > length
+          ? []
+          : sublist(count);
 
   /// Returns an [List] that has been removed by the number of [count] from the
   /// end.
@@ -575,7 +820,9 @@ extension KtcList<E> on List<E> {
   /// looks useful.
   List<E> operator >>(int count) => count.isNegative
       ? throw ArgumentError.value(count, 'count', 'Cannot be negative')
-      : sublist(0, length - count);
+      : count > length
+          ? []
+          : sublist(0, length - count);
 
   /// Returns a [List] containing all elements that are contained by both this
   /// collection and the specified collection.
