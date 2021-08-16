@@ -12,6 +12,6 @@ This package made `Dart` friendly. So there's are some differences as below.
 
 ## Todos
 - [x] Iterable
-- [ ] List
+- [x] List
 - [ ] Set
 - [ ] Map
