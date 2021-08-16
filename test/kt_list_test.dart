@@ -284,12 +284,6 @@ void main() {
     expect(list.containsAll([3]), false);
   });
 
-  test('count', () {
-    expect(empty.count(), 0);
-    expect(list.count(), 3);
-    expect(list.count((element) => element.isEven), 2);
-  });
-
   group('Distinct', () {
     test('distinct', () {
       expect(empty.distinct, []);

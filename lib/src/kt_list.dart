@@ -251,18 +251,6 @@ extension KtcList<E> on List<E> {
     return result;
   }
 
-  /// Returns the number of elements matching the given [test].
-  /// If [test] is not provided it returns the number of elements in the [List].
-  int count([bool Function(E element)? test]) {
-    var count = 0;
-
-    for (final element in this) {
-      if (test?.call(element) ?? true) count++;
-    }
-
-    return count;
-  }
-
   /// Returns a [List] containing only distinct elements from the given
   /// collection.
   List<E> get distinct => toSet().toList();
