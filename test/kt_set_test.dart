@@ -16,7 +16,7 @@ void main() {
     test('chunked', () {
       expect(() => empty.chunked(-1), throwsArgumentError);
       expect(() => empty.chunked(0), throwsArgumentError);
-      expect(empty.chunked(1), {});
+      expect(empty.chunked(1), <int>{});
       expect(() => set.chunked(-1), throwsArgumentError);
       expect(() => set.chunked(0), throwsArgumentError);
       expect(set.chunked(1), {
@@ -37,13 +37,60 @@ void main() {
     });
 
     test('chunkedAndTransform', () {
-      expect(empty, {});
+      expect(empty, <int>{});
       expect(
         set.chunkedAndTransform(
           2,
           (chunk) => chunk.reduce((value, element) => value + element),
         ),
         {1, 2},
+      );
+    });
+  });
+
+  group('flat', () {
+    test('flatMap', () {
+      Iterable<String> transform(int element) => Iterable.generate(
+            element,
+            (index) => index.toString(),
+          );
+
+      expect(empty.flatMap(transform), <int>{});
+      expect(set.flatMap(transform), {'0', '1'});
+    });
+
+    test('flatMapIndexed', () {
+      Iterable<String> transform(int index, int element) => Iterable.generate(
+            element,
+            (_index) => (_index + index).toString(),
+          );
+
+      expect(empty.flatMapIndexed(transform), <int>{});
+      expect(set.flatMapIndexed(transform), {'1', '2', '3'});
+    });
+
+    test('flatten', () {
+      expect({<int>{}}.flatten, <int>{});
+      expect(
+        {
+          [0, 1],
+          [1, 2],
+        }.flatten,
+        {0, 1, 2},
+      );
+
+      expect(
+        {
+          {0, 1},
+          {
+            {0, 1},
+          },
+        }.flatten,
+        {
+          0,
+          1,
+          [0, 1],
+        },
       );
     });
   });
@@ -57,7 +104,7 @@ void main() {
     test('windowed', () {
       final set = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-      expect(empty.windowed(size: 1), {});
+      expect(empty.windowed(size: 1), <int>{});
       expect(
         () => set.windowed(size: -1, step: -1),
         throwsArgumentError,
@@ -112,7 +159,10 @@ void main() {
       int transform(Iterable<int> chunk) =>
           chunk.reduce((value, element) => value + element);
 
-      expect(empty.windowedAndTransform(size: 1, transform: transform), {});
+      expect(
+        empty.windowedAndTransform(size: 1, transform: transform),
+        <int>{},
+      );
       expect(
         () => set.windowedAndTransform(
           size: -1,

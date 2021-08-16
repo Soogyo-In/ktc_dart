@@ -1,3 +1,16 @@
+extension DeepSet<E> on Set<Iterable<E>> {
+  /// Returns a single [Set] of all elements from all [Set]s in the [List].
+  Set<E> get flatten {
+    final expanded = <E>{};
+
+    for (final element in this) {
+      expanded.addAll(element);
+    }
+
+    return expanded;
+  }
+}
+
 extension KtSet<E> on Set<E> {
   /// Splits this collection into a [Set] of iterables each not exceeding the
   /// given [size].
@@ -19,6 +32,34 @@ extension KtSet<E> on Set<E> {
         transform: transform,
         partialWindows: true,
       );
+
+  /// Returns a single [Set] of all elements yielded from results of [transform]
+  /// function being invoked on each element of original collection.
+  Set<R> flatMap<R>(Iterable<R> Function(E element) transform) {
+    final expanded = <R>{};
+
+    for (final element in this) {
+      expanded.addAll(transform(element));
+    }
+
+    return expanded;
+  }
+
+  /// Returns a single [Set] of all elements yielded from results of [transform]
+  /// function being invoked on each element and its index in the original
+  /// collection.
+  Set<R> flatMapIndexed<R>(
+    Iterable<R> Function(int index, E element) transform,
+  ) {
+    final expanded = <R>{};
+    var index = 0;
+
+    for (final element in this) {
+      expanded.addAll(transform(index++, element));
+    }
+
+    return expanded;
+  }
 
   /// Returns an [Iterable] of the valid indices for this collection.
   Iterable<int> get indices => Iterable<int>.generate(length);

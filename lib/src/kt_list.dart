@@ -25,7 +25,7 @@ void rangeCheck({
   }
 }
 
-extension DeepList<E> on List<List<E>> {
+extension DeepList<E> on List<Iterable<E>> {
   /// Returns a single [List] of all elements from all [List]s in the [List].
   List<E> get flatten {
     final expanded = <E>[];
