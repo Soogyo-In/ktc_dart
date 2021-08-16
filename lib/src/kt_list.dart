@@ -228,7 +228,7 @@ extension KtcList<E> on List<E> {
 
   /// Splits this collection into several iterables each not exceeding the given
   /// [size] and applies the given [transform] function to an each.
-  Iterable<T> chunkedAndTransform<T>(
+  List<T> chunkedAndTransform<T>(
     int size,
     T Function(Iterable<E> chunk) transform,
   ) =>
