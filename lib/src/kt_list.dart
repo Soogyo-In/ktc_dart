@@ -313,6 +313,34 @@ extension KtcList<E> on List<E> {
     return list;
   }
 
+  /// Returns a single [List] of all elements yielded from results of
+  /// [transform] function being invoked on each element of original collection.
+  List<R> flatMap<R>(Iterable<R> Function(E element) transform) {
+    final expanded = <R>[];
+
+    for (final element in this) {
+      expanded.addAll(transform(element));
+    }
+
+    return expanded;
+  }
+
+  /// Returns a single [List] of all elements yielded from results of
+  /// [transform] function being invoked on each element and its index in the
+  /// original collection.
+  List<R> flatMapIndexed<R>(
+    Iterable<R> Function(int index, E element) transform,
+  ) {
+    final expanded = <R>[];
+    var index = 0;
+
+    for (final element in this) {
+      expanded.addAll(transform(index++, element));
+    }
+
+    return expanded;
+  }
+
   /// Accumulates value starting with [initialValue] and applying [combine]
   /// function from right to left to each element and current accumulator value.
   R foldRight<R>(

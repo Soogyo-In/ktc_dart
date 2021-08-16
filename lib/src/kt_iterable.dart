@@ -269,6 +269,19 @@ extension KtcIterable<E> on Iterable<E> {
     return null;
   }
 
+  /// Returns a single [Iterable] of all elements yielded from results of
+  /// [transform] function being invoked on each element of original collection.
+  Iterable<R> flatMap<R>(Iterable<R> Function(E element) transform) =>
+      map(transform).flatten;
+
+  /// Returns a single [Iterable] of all elements yielded from results of
+  /// [transform] function being invoked on each element and its index in the
+  /// original collection.
+  Iterable<R> flatMapIndexed<R>(
+    Iterable<R> Function(int index, E element) transform,
+  ) =>
+      mapIndexed(transform).flatten;
+
   /// Accumulates value starting with [initialValue] and applying operation from
   /// left to right to current accumulator value and each element with its index
   /// in the original collection.

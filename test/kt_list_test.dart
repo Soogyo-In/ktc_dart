@@ -323,29 +323,51 @@ void main() {
     expect(list.expandIndexed(transform), [0, 0, 1, 1, 2, 2]);
   });
 
-  test('flatten', () {
-    expect([[]].flatten, []);
-    expect(
-      [
-        [0, 1],
-        [1, 2],
-      ].flatten,
-      [0, 1, 1, 2],
-    );
+  group('flat', () {
+    test('flatMap', () {
+      Iterable<String> transform(int element) => Iterable.generate(
+            element,
+            (index) => index.toString(),
+          );
 
-    expect(
-      [
-        [0, 1],
+      expect(empty.flatMap(transform), []);
+      expect(list.flatMap(transform), ['0', '0', '1']);
+    });
+
+    test('flatMapIndexed', () {
+      Iterable<String> transform(int index, int element) => Iterable.generate(
+            element,
+            (_index) => (_index + index).toString(),
+          );
+
+      expect(empty.flatMapIndexed(transform), []);
+      expect(list.flatMapIndexed(transform), ['1', '2', '3']);
+    });
+
+    test('flatten', () {
+      expect([[]].flatten, []);
+      expect(
         [
           [0, 1],
+          [1, 2],
+        ].flatten,
+        [0, 1, 1, 2],
+      );
+
+      expect(
+        [
+          [0, 1],
+          [
+            [0, 1],
+          ],
+        ].flatten,
+        [
+          0,
+          1,
+          [0, 1]
         ],
-      ].flatten,
-      [
-        0,
-        1,
-        [0, 1]
-      ],
-    );
+      );
+    });
   });
 
   group('Fold', () {
