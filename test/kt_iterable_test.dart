@@ -1029,11 +1029,18 @@ void main() {
   });
 
   test('withIndex', () {
-    expect(iterable.withIndex, [
-      IndexedValue(0, 0),
-      IndexedValue(1, 1),
-      IndexedValue(2, 2),
-    ]);
+    var index = 0;
+    var value = 0;
+
+    for (final indexedValue in empty.withIndex) {
+      expect(indexedValue.index, index++);
+      expect(indexedValue.value, value++);
+    }
+
+    for (final indexedValue in iterable.withIndex) {
+      expect(indexedValue.index, index++);
+      expect(indexedValue.value, value++);
+    }
   });
 
   group('Zip', () {

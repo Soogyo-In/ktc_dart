@@ -727,14 +727,6 @@ void main() {
     });
   });
 
-  test('withIndex', () {
-    expect(list.withIndex, [
-      IndexedValue(0, 0),
-      IndexedValue(1, 1),
-      IndexedValue(2, 2),
-    ]);
-  });
-
   group('Zip', () {
     test('zip', () {
       expect(

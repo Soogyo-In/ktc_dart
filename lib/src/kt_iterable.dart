@@ -224,10 +224,11 @@ extension KtcIterable<E> on Iterable<E> {
   /// original collection.
   Iterable<T> expandIndexed<T>(
     Iterable<T> Function(int index, E element) transform,
-  ) {
-    var index = 0;
-    return expand((element) => transform(index++, element));
-  }
+  ) =>
+      withIndex.expand((indexedValue) => transform(
+            indexedValue.index,
+            indexedValue.value,
+          ));
 
   /// Returns the first non-null value produced by [transform] function being
   /// applied to elements of this collection in iteration order, or throws
@@ -454,25 +455,23 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns an [Iterable] containing the results of applying the given
   /// [transform] function to each element and its index in the original
   /// collection.
-  Iterable<R> mapIndexed<R>(R Function(int index, E element) transform) {
-    final iterator = this.iterator;
-
-    return Iterable.generate(
-      length,
-      (index) => transform(index, (iterator..moveNext()).current),
-    );
-  }
+  Iterable<R> mapIndexed<R>(R Function(int index, E element) transform) =>
+      withIndex.map(
+        (indexedValue) => transform(indexedValue.index, indexedValue.value),
+      );
 
   /// Returns an [Iterable] containing only the non-null results of applying the
   /// given transform function to each element and its index in the original
   /// collection.
   Iterable<R> mapIndexedNotNull<R>(
     R? Function(int index, E element) transform,
-  ) {
-    var index = 0;
-
-    return map((element) => transform(index++, element)).whereNotNull;
-  }
+  ) =>
+      withIndex
+          .map((indexedValue) => transform(
+                indexedValue.index,
+                indexedValue.value,
+              ))
+          .whereNotNull;
 
   /// Returns an [Iterable] containing only the non-null results of applying the
   /// given [transform] function to each element in the original collection.
@@ -826,10 +825,14 @@ extension KtcIterable<E> on Iterable<E> {
     R Function(int index, R previousValue, E element) combine,
   ) {
     var previousValue = initialValue;
-    var index = 0;
 
-    return [initialValue].followedBy(map((element) {
-      previousValue = combine(index++, previousValue, element);
+    return [initialValue].followedBy(withIndex.map((indexedValue) {
+      previousValue = combine(
+        indexedValue.index,
+        previousValue,
+        indexedValue.value,
+      );
+
       return previousValue;
     }));
   }
@@ -858,11 +861,10 @@ extension KtcIterable<E> on Iterable<E> {
   ) {
     if (isEmpty) return Iterable.empty();
 
-    var index = 1;
     var value = first;
 
-    return skip(1).map((element) {
-      value = combine(index++, value, element);
+    return withIndex.skip(1).map((indexedValue) {
+      value = combine(indexedValue.index, value, indexedValue.value);
       return value;
     });
   }
@@ -934,11 +936,13 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<E> union(Iterable<E> other) => followedBy(other).distinct;
 
   /// Returns a [Iterable] containing only elements matching the given [test].
-  Iterable<E> whereIndexed(bool Function(int index, E element) test) {
-    var index = 0;
-
-    return where((element) => test(index++, element));
-  }
+  Iterable<E> whereIndexed(bool Function(int index, E element) test) =>
+      withIndex
+          .where((indexedValue) => test(
+                indexedValue.index,
+                indexedValue.value,
+              ))
+          .map((indexedValue) => indexedValue.value);
 
   /// Returns an [Iterable] containing all elements that are instances of
   /// specified type parameter [T].
@@ -1006,14 +1010,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a lazy [Iterable] that wraps each element of the original
   /// collection into an [IndexedValue] containing the index of that element and
   /// the element itself.
-  Iterable<IndexedValue<E>> get withIndex {
-    final iterator = this.iterator;
-
-    return Iterable.generate(
-      length,
-      (index) => IndexedValue(index, (iterator..moveNext()).current),
-    );
-  }
+  Iterable<IndexedValue<E>> get withIndex => IndexedValueIterable(this);
 
   /// Returns a [Iterable] of pairs built from the elements of this collection
   /// and [other] collection with the same index. The returned [Iterable] has
