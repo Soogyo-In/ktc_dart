@@ -248,32 +248,54 @@ void main() {
     });
   });
 
-  test('flatten', () {
-    expect(Iterable.generate(1, (index) => Iterable.empty()).flatten, []);
-    expect(
-      Iterable.generate(
-        2,
-        (i) => Iterable.generate(2, (j) => i + j),
-      ).flatten,
-      [0, 1, 1, 2],
-    );
+  group('flat', () {
+    test('flatMap', () {
+      Iterable<String> transform(int element) => Iterable.generate(
+            element,
+            (index) => index.toString(),
+          );
 
-    expect(
-      Iterable.generate(
-        2,
-        (index) => index == 0
-            ? Iterable.generate(2)
-            : Iterable.generate(
-                1,
-                (index) => Iterable.generate(2),
-              ),
-      ).flatten,
-      [
-        0,
-        1,
-        [0, 1]
-      ],
-    );
+      expect(empty.flatMap(transform), []);
+      expect(iterable.flatMap(transform), ['0', '0', '1']);
+    });
+
+    test('flatMapIndexed', () {
+      Iterable<String> transform(int index, int element) => Iterable.generate(
+            element,
+            (_index) => (_index + index).toString(),
+          );
+
+      expect(empty.flatMapIndexed(transform), []);
+      expect(iterable.flatMapIndexed(transform), ['1', '2', '3']);
+    });
+
+    test('flatten', () {
+      expect(Iterable.generate(1, (index) => Iterable.empty()).flatten, []);
+      expect(
+        Iterable.generate(
+          2,
+          (i) => Iterable.generate(2, (j) => i + j),
+        ).flatten,
+        [0, 1, 1, 2],
+      );
+
+      expect(
+        Iterable.generate(
+          2,
+          (index) => index == 0
+              ? Iterable.generate(2)
+              : Iterable.generate(
+                  1,
+                  (index) => Iterable.generate(2),
+                ),
+        ).flatten,
+        [
+          0,
+          1,
+          [0, 1]
+        ],
+      );
+    });
   });
 
   group('Fold', () {
@@ -383,6 +405,11 @@ void main() {
       expect(iterable.lastIndexOf(2), 5);
       expect(iterable.lastIndexOf(3), -1);
     });
+  });
+
+  test('indices', () {
+    expect(empty.indices, <int>[]);
+    expect(iterable.indices, [0, 1, 2]);
   });
 
   test('intersect', () {
@@ -1029,11 +1056,18 @@ void main() {
   });
 
   test('withIndex', () {
-    expect(iterable.withIndex, [
-      IndexedValue(0, 0),
-      IndexedValue(1, 1),
-      IndexedValue(2, 2),
-    ]);
+    var index = 0;
+    var value = 0;
+
+    for (final indexedValue in empty.withIndex) {
+      expect(indexedValue.index, index++);
+      expect(indexedValue.value, value++);
+    }
+
+    for (final indexedValue in iterable.withIndex) {
+      expect(indexedValue.index, index++);
+      expect(indexedValue.value, value++);
+    }
   });
 
   group('Zip', () {
