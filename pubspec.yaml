@@ -1,6 +1,6 @@
 name: ktc_dart
 description: A package that implemented the features of the `Collections` library of `Kotlin` (v1.5).
-version: 0.2.0
+version: 0.3.0
 
 repository: https://github.com/Sugyo-In/ktc_dart.git
 issue_tracker: https://github.com/Sugyo-In/ktc_dart/issues

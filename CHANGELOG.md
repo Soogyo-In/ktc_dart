@@ -1,3 +1,8 @@
+## 0.3.0
+- Implement `Set`.
+- Implement `Collection` library from `Kotlin` to `KtcIterable`.
+- Remove all `Iterable` return methods in `KtcList`.
+
 ## 0.2.0
 ### Updates
 - Implement `List`.
