@@ -168,6 +168,16 @@ extension KtcIterable<E> on Iterable<E> {
         partialWindows: true,
       );
 
+  /// Checks if all elements in the specified collection are contained in this
+  /// collection.
+  bool containsAll(Iterable<E> other) {
+    for (final element in other) {
+      if (!contains(element)) return false;
+    }
+
+    return true;
+  }
+
   /// Returns the number of elements matching the given [test].
   /// If [test] is not provided it returns the number of elements in the
   /// [Iterable].
@@ -384,6 +394,9 @@ extension KtcIterable<E> on Iterable<E> {
 
     return lastIndex;
   }
+
+  /// Returns an [Iterable] of the valid indices for this collection.
+  Iterable<int> get indices => Iterable<int>.generate(length);
 
   /// Returns a [Iterable] containing all elements that are contained by both
   /// this collection and the specified collection.

@@ -407,6 +407,11 @@ void main() {
     });
   });
 
+  test('indices', () {
+    expect(empty.indices, <int>[]);
+    expect(iterable.indices, [0, 1, 2]);
+  });
+
   test('intersect', () {
     expect(empty.intersect([1, 2]), <int>[]);
     expect(iterable.intersect([1, 2]), <int>[1, 2]);
