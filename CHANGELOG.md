@@ -1,3 +1,6 @@
+## 0.4.0
+- Implement `Map`.
+
 ## 0.3.0
 - Implement `Set`.
 - Implement `Collection` library from `Kotlin` to `KtcIterable`.

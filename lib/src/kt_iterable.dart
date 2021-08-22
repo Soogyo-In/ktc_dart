@@ -178,7 +178,7 @@ extension KtcIterable<E> on Iterable<E> {
     return true;
   }
 
-  /// Returns the number of elements matching the given [test].
+  /// Returns the number of elements passing the given [test].
   /// If [test] is not provided it returns the number of elements in the
   /// [Iterable].
   int count([bool Function(E element)? test]) =>
@@ -269,7 +269,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns the first element, or `null` if the collection is empty.
   E? get firstOrNull => isEmpty ? null : first;
 
-  /// Returns the first element matching the given [test], or `null` if no such
+  /// Returns the first element passing the given [test], or `null` if no such
   /// element was found.
   E? firstWhereOrNull(bool Function(E element) test) {
     for (final element in this) {
@@ -368,7 +368,7 @@ extension KtcIterable<E> on Iterable<E> {
     return -1;
   }
 
-  /// Returns index of the first element matching the given [test], or `-1` if
+  /// Returns index of the first element passing the given [test], or `-1` if
   /// the collection does not contain such element.
   int indexOfFirst(bool Function(E element) test) {
     var index = 0;
@@ -381,7 +381,7 @@ extension KtcIterable<E> on Iterable<E> {
     return -1;
   }
 
-  /// Returns index of the last element matching the given [test], or `-1` if
+  /// Returns index of the last element passing the given [test], or `-1` if
   /// the collection does not contain such element.
   int indexOfLast(bool Function(E element) test) {
     var lastIndex = -1;
@@ -466,7 +466,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns the last element, or `null` if the collection is empty.
   E? get lastOrNull => isEmpty ? null : last;
 
-  /// Returns the last element matching the given [test], or `null` if no such
+  /// Returns the last element passing the given [test], or `null` if no such
   /// element was found.
   E? lastWhereOrNull(bool Function(E element) test) {
     E? element;
@@ -730,7 +730,7 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns true if the collection has no elements.
   ///
-  /// If [test] is provided it returns `true` if no elements match the given
+  /// If [test] is provided it returns `true` if no elements pass the given
   /// [test].
   bool none([bool Function(E element)? test]) {
     for (final element in this) {
@@ -915,7 +915,7 @@ extension KtcIterable<E> on Iterable<E> {
     return single;
   }
 
-  /// Returns the single element matching the given [test], or `null` if element
+  /// Returns the single element passing the given [test], or `null` if element
   /// was not found or more than one element was found.
   E? singleWhereOrNull(bool Function(E element) test) {
     var found = false;
@@ -961,7 +961,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// collections.
   Iterable<E> union(Iterable<E> other) => followedBy(other).distinct;
 
-  /// Returns a [Iterable] containing only elements matching the given [test].
+  /// Returns a [Iterable] containing only elements passing the given [test].
   Iterable<E> whereIndexed(bool Function(int index, E element) test) =>
       withIndex
           .where((indexedValue) => test(
@@ -975,7 +975,7 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<T> whereIsInstance<T>() =>
       where((element) => element is T).cast<T>();
 
-  /// Returns an [Iterable] containing all elements not matching the given
+  /// Returns an [Iterable] containing all elements not passing the given
   /// [test].
   Iterable<E> whereNot(bool Function(E element) test) =>
       where((element) => !test(element));
