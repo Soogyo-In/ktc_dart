@@ -14,4 +14,4 @@ This package made `Dart` friendly. So there's are some differences as below.
 - [x] Iterable
 - [x] List
 - [x] Set
-- [ ] Map
+- [x] Map
