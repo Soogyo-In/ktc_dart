@@ -936,22 +936,14 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a [List] of all elements sorted according to natural sort order of
   /// the value returned by specified [selector] function.
   List<E> sortedBy<R extends Comparable>(R Function(E element) selector) =>
-      associateBy(selector)
-          .entries
-          .sortedWith((a, b) => a.key.compareTo(b.key))
-          .map((element) => element.value)
-          .toList();
+      toList()..sort((a, b) => selector(a).compareTo(selector(b)));
 
   /// Returns a [List] of all elements sorted descending according to natural
   /// sort order of the value returned by specified [selector] function.
   List<E> sortedByDescending<R extends Comparable>(
     R Function(E element) selector,
   ) =>
-      associateBy(selector)
-          .entries
-          .sortedWith((a, b) => b.key.compareTo(a.key))
-          .map((element) => element.value)
-          .toList();
+      toList()..sort((a, b) => selector(b).compareTo(selector(a)));
 
   /// Returns a [List] of all elements sorted according to the specified
   /// [comparator].
