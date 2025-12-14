@@ -1,3 +1,4 @@
+@Deprecated('Will be removed since Dart SDK supports indexed getter')
 class IndexedValue<T> {
   final int index;
   final T value;
@@ -13,6 +14,7 @@ class IndexedValue<T> {
       other is IndexedValue && index == other.index && value == other.value;
 }
 
+@Deprecated('Will be removed since Dart SDK supports indexed getter')
 class IndexedValueIterable<E> extends Iterable<IndexedValue<E>> {
   final Iterable<E> _iterable;
 
@@ -23,6 +25,7 @@ class IndexedValueIterable<E> extends Iterable<IndexedValue<E>> {
       IndexedValueIterator(_iterable.iterator);
 }
 
+@Deprecated('Will be removed since Dart SDK supports indexed getter')
 class IndexedValueIterator<E> implements Iterator<IndexedValue<E>> {
   final Iterator<E> _iterator;
   int _index = -1;

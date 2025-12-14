@@ -1,4 +1,3 @@
-import 'package:test/scaffolding.dart';
 import 'package:ktc_dart/ktc_dart.dart';
 import 'package:test/test.dart';
 
@@ -262,7 +261,7 @@ void main() {
     test('flatMapIndexed', () {
       Iterable<String> transform(int index, int element) => Iterable.generate(
             element,
-            (_index) => (_index + index).toString(),
+            (i) => (i + index).toString(),
           );
 
       expect(empty.flatMapIndexed(transform), []);

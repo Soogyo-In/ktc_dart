@@ -1,5 +1,3 @@
-part of ktc_dart;
-
 class NoSuchElementException implements Exception {
   final String? message;
 

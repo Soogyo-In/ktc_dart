@@ -1,4 +1,8 @@
-part of ktc_dart;
+import 'dart:math';
+
+import 'iterable/indexed_iterable.dart';
+import 'kt_exceptions.dart';
+import 'kt_pair.dart';
 
 extension NumIterable on Iterable<num> {
   /// Returns an average value of elements in the collection.
@@ -18,6 +22,7 @@ extension NumIterable on Iterable<num> {
   }
 
   /// Returns the sum of all elements in the collection.
+  @Deprecated('Use sum from the collection package instead')
   num get sum {
     if (isEmpty) return 0;
 
@@ -97,6 +102,8 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 
 extension NullableIterable<E> on Iterable<E?> {
   /// Returns an [Iterable] containing all elements that are not `null`.
+  @Deprecated(
+      'Use whereNotNull() from collection package or nonNulls from the Dart SDK instead')
   Iterable<E> get whereNotNull =>
       whereNot((element) => element == null).cast<E>();
 
@@ -357,6 +364,7 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns first index of [element], or `-1` if the collection does not
   /// contain element.
+  @Deprecated('Use indexOf from the Dart SDK instead')
   int indexOf(E element) {
     var index = 0;
 
@@ -451,6 +459,7 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns last index of [element], or `-1` if the collection does not
   /// contain element.
+  @Deprecated('Use lastIndexOf from the Dart SDK instead')
   int lastIndexOf(E element) {
     var lastIndex = -1;
     var index = 0;
@@ -464,10 +473,12 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns the last element, or `null` if the collection is empty.
+  @Deprecated('Use lastOrNull from the collection package instead')
   E? get lastOrNull => isEmpty ? null : last;
 
   /// Returns the last element passing the given [test], or `null` if no such
   /// element was found.
+  @Deprecated('Use lastWhereOrNull from the collection package instead')
   E? lastWhereOrNull(bool Function(E element) test) {
     E? element;
 
@@ -819,6 +830,7 @@ extension KtcIterable<E> on Iterable<E> {
   }
 
   /// Returns a [Iterable] with elements in reversed order.
+  @Deprecated('Use reversed from the Dart SDK instead')
   Iterable<E> get reversed {
     final length = this.length;
 
@@ -897,10 +909,12 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns a new [List] with the elements of this list randomly shuffled
   /// using the specified [random] instance as the source of randomness.
+  @Deprecated('Use shuffled from the collection package instead')
   List<E> shuffled([Random? random]) => toList()..shuffle();
 
   /// Returns single element, or `null` if the collection is empty or has more
   /// than one element.
+  @Deprecated('Use singleOrNull from the collection package instead')
   E? get singleOrNull {
     var found = false;
     E? single;
@@ -917,6 +931,7 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns the single element passing the given [test], or `null` if element
   /// was not found or more than one element was found.
+  @Deprecated('Use singleWhereOrNull from the collection package instead')
   E? singleWhereOrNull(bool Function(E element) test) {
     var found = false;
     E? single;
@@ -935,6 +950,7 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns a [List] of all elements sorted according to natural sort order of
   /// the value returned by specified [selector] function.
+  @Deprecated('Use sortedBy from the collection package instead')
   List<E> sortedBy<R extends Comparable>(R Function(E element) selector) =>
       toList()..sort((a, b) => selector(a).compareTo(selector(b)));
 
@@ -964,11 +980,13 @@ extension KtcIterable<E> on Iterable<E> {
 
   /// Returns an [Iterable] containing all elements that are instances of
   /// specified type parameter [T].
+  @Deprecated('Use whereType<T> from the Dart SDK instead')
   Iterable<T> whereIsInstance<T>() =>
       where((element) => element is T).cast<T>();
 
   /// Returns an [Iterable] containing all elements not passing the given
   /// [test].
+  @Deprecated('Use whereNot from the collection package instead')
   Iterable<E> whereNot(bool Function(E element) test) =>
       where((element) => !test(element));
 
@@ -1028,6 +1046,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// Returns a lazy [Iterable] that wraps each element of the original
   /// collection into an [IndexedValue] containing the index of that element and
   /// the element itself.
+  @Deprecated('Use indexed from the Dart SDK instead')
   Iterable<IndexedValue<E>> get withIndex => IndexedValueIterable(this);
 
   /// Returns a [Iterable] of pairs built from the elements of this collection
@@ -1039,7 +1058,10 @@ extension KtcIterable<E> on Iterable<E> {
 
     return Iterable.generate(
       min(length, other.length),
-      (index) => Pair((iter1..moveNext()).current, (iter2..moveNext()).current),
+      (index) => Pair(
+        (iter1..moveNext()).current,
+        (iter2..moveNext()).current,
+      ),
     );
   }
 

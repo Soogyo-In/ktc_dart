@@ -1,5 +1,4 @@
-part of ktc_dart;
-
+@Deprecated('Will be converted to Record since Dart 3.0 supports Records')
 class Pair<A, B> {
   final A first;
   final B second;

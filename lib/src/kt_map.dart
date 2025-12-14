@@ -1,7 +1,8 @@
-part of ktc_dart;
+import 'kt_iterable.dart';
+import 'kt_pair.dart';
 
 extension KtcMap<K, V> on Map<K, V> {
-  static fromPairs<K, V>(Iterable<Pair<K, V>> pairs) {
+  static Map<K, V> fromPairs<K, V>(Iterable<Pair<K, V>> pairs) {
     final map = <K, V>{};
 
     for (final pair in pairs) {

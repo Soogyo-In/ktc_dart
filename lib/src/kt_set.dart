@@ -1,4 +1,4 @@
-part of ktc_dart;
+import 'kt_iterable.dart';
 
 extension KtcSet<E> on Set<E> {
   /// Returns an [Set] containing all elements of the original collection

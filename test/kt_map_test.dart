@@ -169,7 +169,7 @@ void main() {
     });
 
     test('maxOfWith', () {
-      int comparator<int>(a, b) => a.compareTo(b);
+      int comparator(a, b) => a.compareTo(b);
       int selector(MapEntry<int, String> entry) => entry.key;
 
       expect(
@@ -232,7 +232,7 @@ void main() {
     });
 
     test('minOfWith', () {
-      int comparator<int>(a, b) => a.compareTo(b);
+      int comparator(a, b) => a.compareTo(b);
       int selector(MapEntry<int, String> entry) => entry.key;
 
       expect(
