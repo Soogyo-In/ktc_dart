@@ -1,6 +1,7 @@
 import 'dart:math';
 
-import 'iterable/indexed_iterable.dart';
+import 'package:collection/collection.dart';
+
 import 'kt_exceptions.dart';
 import 'kt_pair.dart';
 
@@ -19,21 +20,6 @@ extension NumIterable on Iterable<num> {
     }
 
     return sum / count;
-  }
-
-  /// Returns the sum of all elements in the collection.
-  @Deprecated('Use sum from the collection package instead')
-  num get sum {
-    if (isEmpty) return 0;
-
-    final iterator = this.iterator..moveNext();
-    var sum = iterator.current;
-
-    while (iterator.moveNext()) {
-      sum += iterator.current;
-    }
-
-    return sum;
   }
 
   /// Returns the sum of all values produced by [selector] function applied to
@@ -101,12 +87,6 @@ extension ComparableIteratable<E extends Comparable> on Iterable<E> {
 }
 
 extension NullableIterable<E> on Iterable<E?> {
-  /// Returns an [Iterable] containing all elements that are not `null`.
-  @Deprecated(
-      'Use whereNotNull() from collection package or nonNulls from the Dart SDK instead')
-  Iterable<E> get whereNotNull =>
-      whereNot((element) => element == null).cast<E>();
-
   /// Returns an original collection containing all the non-null elements,
   /// throwing an [ArgumentError] if there are any null elements.
   Iterable<E> get requireNoNulls {
@@ -122,9 +102,9 @@ extension PairIterable<E1, E2> on Iterable<Pair<E1, E2>> {
   /// Returns a [Pair] of iterables, where first [Iterable] is built from the
   /// first values of each [Pair] from this collection, second [Iterable] is
   /// built from the second values of each [Pair] from this collection.
-  Pair<Iterable<E1>, Iterable<E2>> unzip() => Pair(
-        map((element) => element.first),
-        map((element) => element.second),
+  Pair<Iterable<E1>, Iterable<E2>> unzip() => (
+        map((element) => element.$1),
+        map((element) => element.$2),
       );
 }
 
@@ -242,9 +222,9 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<T> expandIndexed<T>(
     Iterable<T> Function(int index, E element) transform,
   ) =>
-      withIndex.expand((indexedValue) => transform(
-            indexedValue.index,
-            indexedValue.value,
+      indexed.expand((indexedValue) => transform(
+            indexedValue.$1,
+            indexedValue.$2,
           ));
 
   /// Returns the first non-null value produced by [transform] function being
@@ -362,20 +342,6 @@ extension KtcIterable<E> on Iterable<E> {
     return groups;
   }
 
-  /// Returns first index of [element], or `-1` if the collection does not
-  /// contain element.
-  @Deprecated('Use indexOf from the Dart SDK instead')
-  int indexOf(E element) {
-    var index = 0;
-
-    for (final e in this) {
-      if (e == element) return index;
-      index++;
-    }
-
-    return -1;
-  }
-
   /// Returns index of the first element passing the given [test], or `-1` if
   /// the collection does not contain such element.
   int indexOfFirst(bool Function(E element) test) {
@@ -457,63 +423,28 @@ extension KtcIterable<E> on Iterable<E> {
         transform: transform,
       ).toString();
 
-  /// Returns last index of [element], or `-1` if the collection does not
-  /// contain element.
-  @Deprecated('Use lastIndexOf from the Dart SDK instead')
-  int lastIndexOf(E element) {
-    var lastIndex = -1;
-    var index = 0;
-
-    for (final elm in this) {
-      if (element == elm) lastIndex = index;
-      index++;
-    }
-
-    return lastIndex;
-  }
-
-  /// Returns the last element, or `null` if the collection is empty.
-  @Deprecated('Use lastOrNull from the collection package instead')
-  E? get lastOrNull => isEmpty ? null : last;
-
-  /// Returns the last element passing the given [test], or `null` if no such
-  /// element was found.
-  @Deprecated('Use lastWhereOrNull from the collection package instead')
-  E? lastWhereOrNull(bool Function(E element) test) {
-    E? element;
-
-    for (final elm in this) {
-      if (test(elm)) element = elm;
-    }
-
-    return element;
-  }
-
   /// Returns an [Iterable] containing the results of applying the given
   /// [transform] function to each element and its index in the original
   /// collection.
   Iterable<R> mapIndexed<R>(R Function(int index, E element) transform) =>
-      withIndex.map(
-        (indexedValue) => transform(indexedValue.index, indexedValue.value),
+      indexed.map(
+        (indexedValue) => transform(indexedValue.$1, indexedValue.$2),
       );
 
   /// Returns an [Iterable] containing only the non-null results of applying the
   /// given transform function to each element and its index in the original
   /// collection.
-  Iterable<R> mapIndexedNotNull<R>(
+  Iterable<R> mapIndexedNotNull<R extends Object>(
     R? Function(int index, E element) transform,
   ) =>
-      withIndex
-          .map((indexedValue) => transform(
-                indexedValue.index,
-                indexedValue.value,
-              ))
-          .whereNotNull;
+      indexed
+          .map((indexedValue) => transform(indexedValue.$1, indexedValue.$2))
+          .nonNulls;
 
   /// Returns an [Iterable] containing only the non-null results of applying the
   /// given [transform] function to each element in the original collection.
-  Iterable<R> mapNotNull<R>(R? Function(E element) transform) =>
-      map(transform).whereNotNull;
+  Iterable<R> mapNotNull<R extends Object>(R? Function(E element) transform) =>
+      map(transform).nonNulls;
 
   /// Returns the first element yielding the largest value of the given
   /// [selector] or null if there are no elements.
@@ -739,19 +670,6 @@ extension KtcIterable<E> on Iterable<E> {
     return minElement;
   }
 
-  /// Returns true if the collection has no elements.
-  ///
-  /// If [test] is provided it returns `true` if no elements pass the given
-  /// [test].
-  bool none([bool Function(E element)? test]) {
-    for (final element in this) {
-      if (test == null) return false;
-      if (test.call(element)) return false;
-    }
-
-    return true;
-  }
-
   /// Performs the given [action] on each element and returns the collection
   /// itself afterwards.
   Iterable<E> onEach(void Function(E element) action) {
@@ -778,7 +696,7 @@ extension KtcIterable<E> on Iterable<E> {
   /// [Iterable] contains elements for which [test] yielded true, while second
   /// [Iterable] contains elements for which [test] yielded false.
   Pair<Iterable<E>, Iterable<E>> partition(bool Function(E element) test) =>
-      Pair(where(test), whereNot(test));
+      (where(test), whereNot(test));
 
   /// Accumulates value starting with the first element and applying [combine]
   /// function from left to right to current accumulator value and each element
@@ -829,17 +747,6 @@ extension KtcIterable<E> on Iterable<E> {
     return value;
   }
 
-  /// Returns a [Iterable] with elements in reversed order.
-  @Deprecated('Use reversed from the Dart SDK instead')
-  Iterable<E> get reversed {
-    final length = this.length;
-
-    return Iterable.generate(
-      length,
-      (index) => elementAt(length - index - 1),
-    );
-  }
-
   /// Returns a [Iterable] containing successive accumulation values generated
   /// by applying [combine] function from left to right to each element and
   /// current accumulator value that starts with [initialValue].
@@ -864,11 +771,11 @@ extension KtcIterable<E> on Iterable<E> {
   ) {
     var previousValue = initialValue;
 
-    return [initialValue].followedBy(withIndex.map((indexedValue) {
+    return [initialValue].followedBy(indexed.map((indexedValue) {
       previousValue = combine(
-        indexedValue.index,
+        indexedValue.$1,
         previousValue,
-        indexedValue.value,
+        indexedValue.$2,
       );
 
       return previousValue;
@@ -901,58 +808,11 @@ extension KtcIterable<E> on Iterable<E> {
 
     var value = first;
 
-    return withIndex.skip(1).map((indexedValue) {
-      value = combine(indexedValue.index, value, indexedValue.value);
+    return indexed.skip(1).map((indexedValue) {
+      value = combine(indexedValue.$1, value, indexedValue.$2);
       return value;
     });
   }
-
-  /// Returns a new [List] with the elements of this list randomly shuffled
-  /// using the specified [random] instance as the source of randomness.
-  @Deprecated('Use shuffled from the collection package instead')
-  List<E> shuffled([Random? random]) => toList()..shuffle();
-
-  /// Returns single element, or `null` if the collection is empty or has more
-  /// than one element.
-  @Deprecated('Use singleOrNull from the collection package instead')
-  E? get singleOrNull {
-    var found = false;
-    E? single;
-
-    for (final element in this) {
-      if (found) return null;
-
-      single = element;
-      found = true;
-    }
-
-    return single;
-  }
-
-  /// Returns the single element passing the given [test], or `null` if element
-  /// was not found or more than one element was found.
-  @Deprecated('Use singleWhereOrNull from the collection package instead')
-  E? singleWhereOrNull(bool Function(E element) test) {
-    var found = false;
-    E? single;
-
-    for (final element in this) {
-      if (test(element)) {
-        if (found) return null;
-
-        single = element;
-        found = true;
-      }
-    }
-
-    return single;
-  }
-
-  /// Returns a [List] of all elements sorted according to natural sort order of
-  /// the value returned by specified [selector] function.
-  @Deprecated('Use sortedBy from the collection package instead')
-  List<E> sortedBy<R extends Comparable>(R Function(E element) selector) =>
-      toList()..sort((a, b) => selector(a).compareTo(selector(b)));
 
   /// Returns a [List] of all elements sorted descending according to natural
   /// sort order of the value returned by specified [selector] function.
@@ -970,25 +830,12 @@ extension KtcIterable<E> on Iterable<E> {
   Iterable<E> union(Iterable<E> other) => followedBy(other).distinct;
 
   /// Returns a [Iterable] containing only elements passing the given [test].
-  Iterable<E> whereIndexed(bool Function(int index, E element) test) =>
-      withIndex
-          .where((indexedValue) => test(
-                indexedValue.index,
-                indexedValue.value,
-              ))
-          .map((indexedValue) => indexedValue.value);
-
-  /// Returns an [Iterable] containing all elements that are instances of
-  /// specified type parameter [T].
-  @Deprecated('Use whereType<T> from the Dart SDK instead')
-  Iterable<T> whereIsInstance<T>() =>
-      where((element) => element is T).cast<T>();
-
-  /// Returns an [Iterable] containing all elements not passing the given
-  /// [test].
-  @Deprecated('Use whereNot from the collection package instead')
-  Iterable<E> whereNot(bool Function(E element) test) =>
-      where((element) => !test(element));
+  Iterable<E> whereIndexed(bool Function(int index, E element) test) => indexed
+      .where((indexedValue) => test(
+            indexedValue.$1,
+            indexedValue.$2,
+          ))
+      .map((indexedValue) => indexedValue.$2);
 
   /// Returns a [Iterable] of snapshots of the window of the given [size]
   /// sliding along this collection with the given [step], where each snapshot
@@ -1043,12 +890,6 @@ extension KtcIterable<E> on Iterable<E> {
     );
   }
 
-  /// Returns a lazy [Iterable] that wraps each element of the original
-  /// collection into an [IndexedValue] containing the index of that element and
-  /// the element itself.
-  @Deprecated('Use indexed from the Dart SDK instead')
-  Iterable<IndexedValue<E>> get withIndex => IndexedValueIterable(this);
-
   /// Returns a [Iterable] of pairs built from the elements of this collection
   /// and [other] collection with the same index. The returned [Iterable] has
   /// length of the shortest collection.
@@ -1058,7 +899,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     return Iterable.generate(
       min(length, other.length),
-      (index) => Pair(
+      (index) => (
         (iter1..moveNext()).current,
         (iter2..moveNext()).current,
       ),
@@ -1083,7 +924,7 @@ extension KtcIterable<E> on Iterable<E> {
 
     return Iterable.generate(
       length - 1,
-      (index) => Pair(
+      (index) => (
         (iterator1..moveNext()).current,
         (iterator2..moveNext()).current,
       ),

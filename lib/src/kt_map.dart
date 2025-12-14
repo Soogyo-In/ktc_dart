@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import 'kt_iterable.dart';
 import 'kt_pair.dart';
 
@@ -6,7 +8,7 @@ extension KtcMap<K, V> on Map<K, V> {
     final map = <K, V>{};
 
     for (final pair in pairs) {
-      map[pair.first] = pair.second;
+      map[pair.$1] = pair.$2;
     }
 
     return map;
@@ -171,7 +173,7 @@ extension KtcMap<K, V> on Map<K, V> {
   ///
   /// If [test] is provided it returns `true` if no entries match the given
   /// [test].
-  bool none([bool Function(MapEntry<K, V> entry)? test]) => entries.none(test);
+  bool none(bool Function(MapEntry<K, V> entry) test) => entries.none(test);
 
   /// Performs the given [action] on each entry and returns the [Map] itself
   /// afterwards.

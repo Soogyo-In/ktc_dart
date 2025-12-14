@@ -371,14 +371,6 @@ void main() {
   });
 
   group('IndexOf', () {
-    test('indexOf', () {
-      expect(empty.indexOf(0), -1);
-      expect(iterable.indexOf(-1), -1);
-      expect(iterable.indexOf(0), 0);
-      expect(iterable.indexOf(2), 2);
-      expect(iterable.indexOf(3), -1);
-    });
-
     test('indexOfFirst', () {
       expect(empty.indexOfFirst((element) => element.isNegative), -1);
       expect(iterable.indexOfFirst((element) => element.isNegative), -1);
@@ -389,20 +381,6 @@ void main() {
       expect(empty.indexOfLast((element) => element.isNegative), -1);
       expect(iterable.indexOfLast((element) => element.isNegative), -1);
       expect(iterable.indexOfLast((element) => element.isEven), 2);
-    });
-
-    test('lastIndexOf', () {
-      iterable = Iterable<Iterable<int>>.generate(
-        3,
-        (index) => Iterable<int>.generate(2, (_) => index),
-      ).flatten;
-      // [0, 0, 1, 1, 2, 2];
-
-      expect(empty.lastIndexOf(0), -1);
-      expect(iterable.lastIndexOf(-1), -1);
-      expect(iterable.lastIndexOf(0), 1);
-      expect(iterable.lastIndexOf(2), 5);
-      expect(iterable.lastIndexOf(3), -1);
     });
   });
 
@@ -466,12 +444,6 @@ void main() {
     test('lastOrNull', () {
       expect(empty.lastOrNull, null);
       expect(iterable.lastOrNull, 2);
-    });
-
-    test('lastWhereOrNull', () {
-      expect(empty.lastWhereOrNull((element) => element.isEven), null);
-      expect(iterable.lastWhereOrNull((element) => element.isEven), 2);
-      expect(iterable.lastWhereOrNull((element) => element.isNegative), null);
     });
   });
 
@@ -706,14 +678,6 @@ void main() {
     });
   });
 
-  test('none', () {
-    expect(empty.none(), true);
-    expect(iterable.none(), false);
-    expect(Iterable.empty().none((element) => element == null), true);
-    expect(iterable.none((element) => element.isNegative), true);
-    expect(iterable.none((element) => element.isEven), false);
-  });
-
   group('OnEach', () {
     test('onEach', () {
       var idx = 0;
@@ -741,10 +705,10 @@ void main() {
     final emptyPartition = empty.partition(test);
     final partition = iterable.partition(test);
 
-    expect(emptyPartition.first, []);
-    expect(emptyPartition.second, []);
-    expect(partition.first, [0, 2]);
-    expect(partition.second, [1]);
+    expect(emptyPartition.$1, []);
+    expect(emptyPartition.$2, []);
+    expect(partition.$1, [0, 2]);
+    expect(partition.$2, [1]);
   });
 
   group('Reduce', () {
@@ -799,40 +763,17 @@ void main() {
     );
   });
 
-  test('reversed', () {
-    expect(iterable.reversed, [2, 1, 0]);
-  });
-
   group('Single', () {
     test('singleOrNull', () {
       expect(empty.singleOrNull, null);
       expect(Iterable<int>.generate(1).singleOrNull, 0);
       expect(Iterable<int>.generate(2).singleOrNull, null);
     });
-
-    test('singleWhrerOrNull', () {
-      bool test(int element) => element == 1;
-
-      expect(empty.singleWhereOrNull(test), null);
-      expect(
-        Iterable<int>.generate(2, (index) => index * 2).singleWhereOrNull(test),
-        null,
-      );
-      expect(Iterable<int>.generate(3).singleWhereOrNull(test), 1);
-      expect(
-        Iterable<int>.generate(2, (index) => 1).singleWhereOrNull(test),
-        null,
-      );
-    });
   });
 
   group('Sort', () {
     test('sorted', () {
       expect(reversedIterable.sorted, [0, 1, 2]);
-    });
-
-    test('sortedBy', () {
-      expect(iterable.sortedBy((element) => -element), [2, 1, 0]);
     });
 
     test('sortedByDescending', () {
@@ -857,10 +798,6 @@ void main() {
       3,
       (index) => index.isOdd ? index.toDouble() : index,
     );
-    test('sum', () {
-      expect(empty.sum, 0);
-      expect(iterable.sum, 3);
-    });
 
     test('sumOf', () {
       num selector(num element) => -element;
@@ -894,12 +831,12 @@ void main() {
 
   test('unzip', () {
     final emptyUnzip = Iterable<Pair>.empty().unzip();
-    final unzip = Iterable.generate(3, (index) => Pair(index, -index)).unzip();
+    final unzip = Iterable.generate(3, (index) => (index, -index)).unzip();
 
-    expect(emptyUnzip.first, Iterable<int>.empty());
-    expect(emptyUnzip.second, Iterable<int>.empty());
-    expect(unzip.first, Iterable<int>.generate(3));
-    expect(unzip.second, Iterable<int>.generate(3, (index) => -index));
+    expect(emptyUnzip.$1, Iterable<int>.empty());
+    expect(emptyUnzip.$2, Iterable<int>.empty());
+    expect(unzip.$1, Iterable<int>.generate(3));
+    expect(unzip.$2, Iterable<int>.generate(3, (index) => -index));
   });
 
   group('Where', () {
@@ -908,33 +845,6 @@ void main() {
 
       expect(empty.whereIndexed(test), []);
       expect(iterable.whereIndexed(test), [0, 1, 2]);
-    });
-
-    test('whereIsInstance', () {
-      final iterable = Iterable.generate(
-        3,
-        (index) => index.isOdd ? index.toString() : index,
-      );
-
-      expect(empty.whereIsInstance<String>(), []);
-      expect(iterable.whereIsInstance<String>(), ['1']);
-    });
-
-    test('whereNot', () {
-      bool test(int element) => element.isEven;
-
-      expect(empty.whereNot(test), []);
-      expect(iterable.whereNot(test), [1]);
-    });
-
-    test('whereNotNull', () {
-      final iterable = Iterable.generate(
-        4,
-        (index) => index.isEven ? null : index,
-      );
-
-      expect(empty.whereNotNull, []);
-      expect(iterable.whereNotNull, [1, 3]);
     });
   });
 
@@ -1054,26 +964,11 @@ void main() {
     });
   });
 
-  test('withIndex', () {
-    var index = 0;
-    var value = 0;
-
-    for (final indexedValue in empty.withIndex) {
-      expect(indexedValue.index, index++);
-      expect(indexedValue.value, value++);
-    }
-
-    for (final indexedValue in iterable.withIndex) {
-      expect(indexedValue.index, index++);
-      expect(indexedValue.value, value++);
-    }
-  });
-
   group('Zip', () {
     test('zip', () {
       expect(
         iterable.zip(['0', '1', '2', '3']),
-        [Pair(0, '0'), Pair(1, '1'), Pair(2, '2')],
+        [(0, '0'), (1, '1'), (2, '2')],
       );
     });
 
@@ -1081,20 +976,20 @@ void main() {
       expect(
         iterable.zipAndTransform(
           ['0', '1', '2', '3'],
-          (pair) => '${pair.first}${pair.second}',
+          (pair) => '${pair.$1}${pair.$2}',
         ),
         ['00', '11', '22'],
       );
     });
 
     test('zipWithNext', () {
-      expect(iterable.zipWithNext, [Pair(0, 1), Pair(1, 2)]);
+      expect(iterable.zipWithNext, [(0, 1), (1, 2)]);
     });
 
     test('zipWithNextAndTransform', () {
       expect(
         iterable.zipWithNextAndTransform(
-          (pair) => '${pair.first}${pair.second}',
+          (pair) => '${pair.$1}${pair.$2}',
         ),
         ['01', '12'],
       );

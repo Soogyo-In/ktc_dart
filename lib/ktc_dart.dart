@@ -1,4 +1,4 @@
-library ktc_dart;
+library;
 
 export 'src/kt_exceptions.dart';
 export 'src/kt_iterable.dart';

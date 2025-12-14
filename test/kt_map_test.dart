@@ -78,7 +78,7 @@ void main() {
     expect(
       KtcMap.fromPairs(Iterable<Pair<int, String>>.generate(
         2,
-        (index) => Pair(index, index.toString()),
+        (index) => (index, index.toString()),
       )),
       {0: '0', 1: '1'},
     );
@@ -265,8 +265,6 @@ void main() {
   });
 
   test('none', () {
-    expect(empty.none(), true);
-    expect(map.none(), false);
     expect(map.none((entry) => entry.key.isOdd), false);
     expect(map.none((entry) => entry.key.isNegative), true);
   });

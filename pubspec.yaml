@@ -6,11 +6,12 @@ repository: https://github.com/Sugyo-In/ktc_dart.git
 issue_tracker: https://github.com/Sugyo-In/ktc_dart/issues
 
 environment:
-  sdk: ">=2.13.4 <4.0.0"
+  sdk: ^3.0.0
 
 dependencies:
-  meta: ">=1.7.0 <2.0.0"
+  collection: ^1.19.1
+  meta: ^1.7.0
 
 dev_dependencies:
-  lints: ">=1.0.1 <2.0.0"
-  test: ">=1.17.9 <2.0.0"
+  lints: ^6.0.0
+  test: ^1.17.9
